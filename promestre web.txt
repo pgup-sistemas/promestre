@@ -1,0 +1,1025 @@
+# 📋 DOCUMENTO DE REQUISITOS COMPLETO
+## Sistema de Gestão para Professores Autônomos
+
+**Versão:** 1.0  
+**Data:** 30/12/2024  
+**Status:** Documento Final para Desenvolvimento
+
+---
+
+## 📑 ÍNDICE
+
+1. [Visão Geral](#1-visão-geral)
+2. [Requisitos Funcionais](#2-requisitos-funcionais)
+3. [Requisitos Não-Funcionais](#3-requisitos-não-funcionais)
+4. [Regras de Negócio](#4-regras-de-negócio)
+5. [Integrações Externas](#5-integrações-externas)
+6. [Modelo de Dados](#6-modelo-de-dados)
+7. [Fluxos de Usuário](#7-fluxos-de-usuário)
+8. [Segurança e Compliance](#8-segurança-e-compliance)
+9. [Roadmap de Desenvolvimento](#9-roadmap-de-desenvolvimento)
+
+---
+
+## 1. VISÃO GERAL
+
+### 1.1 Objetivo do Sistema
+
+Plataforma SaaS multi-tenant para professores autônomos gerenciarem alunos, mensalidades, agendamentos e comunicação de forma simples, rápida e profissional.
+
+### 1.2 Público-Alvo
+
+- Professores particulares (idiomas, música, reforço escolar)
+- Instrutores de atividades físicas (artes marciais, personal, yoga)
+- Professores online (cursos, mentorias, coaching)
+- Microescolas e estúdios pequenos
+
+### 1.3 Proposta de Valor
+
+- ⚡ **Rápido:** Cadastro de aluno em < 1 minuto
+- 💰 **Completo:** Gestão financeira + cobrança automatizada
+- 📱 **Simples:** Interface intuitiva, mobile-first
+- 🔗 **Integrado:** EfiBank para PIX/Boleto + WhatsApp nativo
+- 🌐 **Público:** Formulários de captação de leads
+
+### 1.4 Diferenciais
+
+- Sem custo de API WhatsApp (usa links nativos)
+- Integração direta com EfiBank (PIX + Boleto)
+- Formulários públicos de pré-agendamento e matrícula
+- Contratos digitais com assinatura eletrônica
+- Multi-tenancy (cada professor isolado)
+- Cobrança recorrente automatizada
+
+---
+
+## 2. REQUISITOS FUNCIONAIS
+
+### 2.1 RF001 - AUTENTICAÇÃO E USUÁRIO
+
+| ID | Descrição | Prioridade | Sprint |
+|----|-----------|------------|--------|
+| RF001.1 | Cadastro com email/senha | 🔴 Alta | 1 |
+| RF001.2 | Login com email/senha | 🔴 Alta | 1 |
+| RF001.3 | Recuperação de senha via email | 🟡 Média | 2 |
+| RF001.4 | Perfil do professor (nome, foto, contatos, dados bancários) | 🔴 Alta | 1 |
+| RF001.5 | Logout | 🔴 Alta | 1 |
+| RF001.6 | Alterar senha | 🟡 Média | 2 |
+| RF001.7 | Autenticação JWT com refresh token | 🔴 Alta | 1 |
+
+---
+
+### 2.2 RF002 - GERENCIAMENTO DE ALUNOS
+
+| ID | Descrição | Prioridade | Sprint |
+|----|-----------|------------|--------|
+| RF002.1 | Cadastrar aluno (nome, email, telefone, WhatsApp) | 🔴 Alta | 1 |
+| RF002.2 | Editar dados do aluno | 🔴 Alta | 1 |
+| RF002.3 | Excluir aluno (soft delete) | 🟡 Média | 2 |
+| RF002.4 | Listar alunos com busca por nome/telefone/email | 🔴 Alta | 1 |
+| RF002.5 | Filtrar alunos por status (ativo/inativo) | 🟡 Média | 2 |
+| RF002.6 | Filtrar alunos por tipo de aula | 🟡 Média | 2 |
+| RF002.7 | Visualizar detalhes completos do aluno | 🔴 Alta | 1 |
+| RF002.8 | Marcar aluno como ativo/inativo | 🟡 Média | 2 |
+| RF002.9 | Associar aluno a tipo de aula | 🔴 Alta | 1 |
+| RF002.10 | Botão "Enviar WhatsApp" (abre link direto) | 🔴 Alta | 1 |
+| RF002.11 | Visualizar histórico de mensalidades do aluno | 🔴 Alta | 2 |
+| RF002.12 | Visualizar histórico de presença do aluno | 🟡 Média | 3 |
+| RF002.13 | Cadastro rápido (modal com campos essenciais) | 🟡 Média | 2 |
+
+**Campos do Aluno:**
+- Nome completo (obrigatório)
+- Email (opcional, único por professor)
+- Telefone (obrigatório)
+- WhatsApp (obrigatório, formatado +5569...)
+- CPF (opcional)
+- Data de nascimento (opcional)
+- Endereço completo (opcional)
+- Tipo de aula (obrigatório, FK)
+- Status (ativo/inativo)
+- Observações (textarea)
+- Data de cadastro (auto)
+- Data de última atualização (auto)
+
+---
+
+### 2.3 RF003 - TIPOS DE AULA
+
+| ID | Descrição | Prioridade | Sprint |
+|----|-----------|------------|--------|
+| RF003.1 | Cadastrar tipo de aula | 🔴 Alta | 1 |
+| RF003.2 | Editar tipo de aula | 🔴 Alta | 1 |
+| RF003.3 | Excluir tipo de aula (se não tiver alunos) | 🟡 Média | 2 |
+| RF003.4 | Listar tipos de aula | 🔴 Alta | 1 |
+| RF003.5 | Definir preço padrão mensal | 🔴 Alta | 1 |
+| RF003.6 | Definir descrição do tipo | 🟡 Média | 2 |
+| RF003.7 | Definir cor de identificação visual | 🟡 Média | 2 |
+| RF003.8 | Marcar tipo como ativo/inativo | 🟡 Média | 2 |
+
+---
+
+### 2.4 RF004 - MENSALIDADES E COBRANÇAS
+
+| ID | Descrição | Prioridade | Sprint |
+|----|-----------|------------|--------|
+| RF004.1 | Gerar mensalidade individual (mês/ano específico) | 🔴 Alta | 1 |
+| RF004.2 | Gerar mensalidades em lote (todos alunos ativos) | 🔴 Alta | 1 |
+| RF004.3 | Editar valor da mensalidade | 🔴 Alta | 1 |
+| RF004.4 | Editar data de vencimento | 🔴 Alta | 1 |
+| RF004.5 | Marcar como pago manualmente | 🔴 Alta | 1 |
+| RF004.6 | Gerar PIX via EfiBank | 🔴 Alta | 2 |
+| RF004.7 | Gerar boleto via EfiBank | 🟡 Média | 3 |
+| RF004.8 | Cancelar mensalidade | 🟡 Média | 2 |
+| RF004.9 | Listar mensalidades com filtros (status, período, aluno) | 🔴 Alta | 1 |
+| RF004.10 | Visualizar detalhes da mensalidade | 🔴 Alta | 1 |
+| RF004.11 | Enviar cobrança via WhatsApp (link + mensagem) | 🔴 Alta | 1 |
+| RF004.12 | Baixa automática via webhook EfiBank | 🔴 Alta | 2 |
+| RF004.13 | Calcular juros e multa por atraso | 🟡 Média | 3 |
+| RF004.14 | Histórico de transações da mensalidade | 🟡 Média | 2 |
+| RF004.15 | Exportar lista de mensalidades (Excel/PDF) | 🟡 Média | 3 |
+
+---
+
+### 2.5 RF005 - INTEGRAÇÃO EFIBANK
+
+| ID | Descrição | Prioridade | Sprint |
+|----|-----------|------------|--------|
+| RF005.1 | Configurar credenciais (Client ID, Secret, Certificado) | 🔴 Alta | 2 |
+| RF005.2 | Gerar cobrança PIX via API | 🔴 Alta | 2 |
+| RF005.3 | Receber PIX Copia e Cola | 🔴 Alta | 2 |
+| RF005.4 | Receber QR Code do PIX (URL da imagem) | 🔴 Alta | 2 |
+| RF005.5 | Webhook para notificação de pagamento | 🔴 Alta | 2 |
+| RF005.6 | Validar assinatura do webhook | 🔴 Alta | 2 |
+| RF005.7 | Gerar boleto via API | 🟡 Média | 3 |
+| RF005.8 | Consultar status de cobrança | 🟡 Média | 3 |
+| RF005.9 | Cancelar cobrança PIX/Boleto | ⚪ Baixa | 4 |
+| RF005.10 | Alternar entre sandbox e produção | 🔴 Alta | 2 |
+
+---
+
+### 2.6 RF006 - DASHBOARD E RELATÓRIOS
+
+| ID | Descrição | Prioridade | Sprint |
+|----|-----------|------------|--------|
+| RF006.1 | Dashboard com resumo financeiro do mês | 🔴 Alta | 1 |
+| RF006.2 | Cards: Recebido, A Receber, Inadimplência, Total Alunos | 🔴 Alta | 1 |
+| RF006.3 | Gráfico de receita mensal (últimos 6 meses) | 🔴 Alta | 2 |
+| RF006.4 | Gráfico comparativo: esperado vs recebido | 🟡 Média | 2 |
+| RF006.5 | Lista de inadimplentes | 🔴 Alta | 1 |
+| RF006.6 | Lista de mensalidades a vencer (próximos 7 dias) | 🔴 Alta | 1 |
+| RF006.7 | Filtro por período (mês/ano) | 🟡 Média | 2 |
+| RF006.8 | Filtro por tipo de aula | 🟡 Média | 2 |
+| RF006.9 | Exportar relatório financeiro (Excel) | 🟡 Média | 3 |
+| RF006.10 | Exportar relatório financeiro (PDF) | 🟡 Média | 3 |
+| RF006.11 | Relatório de inadimplência detalhado | 🟡 Média | 3 |
+| RF006.12 | Alertas visuais (mensalidades vencendo, PIX expirados) | 🟡 Média | 2 |
+| RF006.13 | Cards de pré-agendamentos e pré-matrículas pendentes | 🔴 Alta | 2 |
+
+---
+
+### 2.7 RF007 - NOTIFICAÇÕES VIA WHATSAPP
+
+| ID | Descrição | Prioridade | Sprint |
+|----|-----------|------------|--------|
+| RF007.1 | Templates de mensagens (Cobrança, Lembrete, Agradecimento, Aviso) | 🔴 Alta | 1 |
+| RF007.2 | Enviar mensagem individual (abre WhatsApp com link) | 🔴 Alta | 1 |
+| RF007.3 | Envio em lote assistido (abre sequencialmente) | 🔴 Alta | 2 |
+| RF007.4 | Variáveis dinâmicas ([NOME], [VALOR], [DATA], [PIX]) | 🔴 Alta | 1 |
+| RF007.5 | Editar template antes de enviar | 🟡 Média | 2 |
+| RF007.6 | Histórico de notificações enviadas | 🟡 Média | 2 |
+| RF007.7 | Incluir PIX copia e cola na mensagem | 🔴 Alta | 2 |
+| RF007.8 | Incluir link do boleto na mensagem | 🟡 Média | 3 |
+| RF007.9 | Filtrar destinatários (inadimplentes, por tipo, todos) | 🔴 Alta | 2 |
+| RF007.10 | Preview da mensagem antes de enviar | 🟡 Média | 2 |
+
+---
+
+### 2.8 RF008 - AGENDA DE AULAS
+
+| ID | Descrição | Prioridade | Sprint |
+|----|-----------|------------|--------|
+| RF008.1 | Visualizar calendário mensal | 🟡 Média | 3 |
+| RF008.2 | Visualizar calendário semanal | 🟡 Média | 3 |
+| RF008.3 | Agendar aula para aluno (data/hora/duração) | 🟡 Média | 3 |
+| RF008.4 | Editar aula agendada | 🟡 Média | 3 |
+| RF008.5 | Cancelar aula | 🟡 Média | 3 |
+| RF008.6 | Marcar presença/falta | 🟡 Média | 3 |
+| RF008.7 | Aulas recorrentes (semanal) | ⚪ Baixa | 4 |
+| RF008.8 | Notificação de aula próxima (1 dia antes) | ⚪ Baixa | 4 |
+| RF008.9 | Visualizar histórico de aulas do aluno | 🟡 Média | 3 |
+| RF008.10 | Filtrar agenda por aluno/tipo de aula | 🟡 Média | 3 |
+
+---
+
+### 2.9 RF009 - CONTROLE DE PRESENÇA
+
+| ID | Descrição | Prioridade | Sprint |
+|----|-----------|------------|--------|
+| RF009.1 | Marcar presença individual | 🟡 Média | 3 |
+| RF009.2 | Marcar falta individual | 🟡 Média | 3 |
+| RF009.3 | Marcar falta justificada | 🟡 Média | 3 |
+| RF009.4 | Histórico de frequência por aluno | 🟡 Média | 3 |
+| RF009.5 | Percentual de presença do aluno | ⚪ Baixa | 4 |
+| RF009.6 | Relatório de frequência mensal (todos alunos) | ⚪ Baixa | 4 |
+| RF009.7 | Exportar relatório de frequência (Excel/PDF) | ⚪ Baixa | 4 |
+
+---
+
+### 2.10 RF010 - CONFIGURAÇÕES
+
+| ID | Descrição | Prioridade | Sprint |
+|----|-----------|------------|--------|
+| RF010.1 | Editar perfil do professor | 🔴 Alta | 1 |
+| RF010.2 | Configurar dados bancários (PIX) | 🔴 Alta | 1 |
+| RF010.3 | Configurar credenciais EfiBank | 🔴 Alta | 2 |
+| RF010.4 | Personalizar templates de mensagem | 🟡 Média | 2 |
+| RF010.5 | Configurar dia padrão de vencimento | 🟡 Média | 2 |
+| RF010.6 | Configurar taxa de multa (%) | 🟡 Média | 3 |
+| RF010.7 | Configurar taxa de juros (% ao mês) | 🟡 Média | 3 |
+| RF010.8 | Configurar validade do PIX (horas) | 🟡 Média | 3 |
+| RF010.9 | Configurar validade do boleto (dias) | 🟡 Média | 3 |
+| RF010.10 | Configurar notificações (email, in-app) | 🟡 Média | 2 |
+| RF010.11 | Backup manual de dados (export JSON) | ⚪ Baixa | 4 |
+
+---
+
+### 2.11 RF011 - FORMULÁRIO PÚBLICO DE PRÉ-AGENDAMENTO
+
+| ID | Descrição | Prioridade | Sprint |
+|----|-----------|------------|--------|
+| RF011.1 | Gerar link público único (/agendar/:slug) | 🔴 Alta | 2 |
+| RF011.2 | Formulário responsivo (mobile-first) | 🔴 Alta | 2 |
+| RF011.3 | Campos: nome, telefone, tipo de aula, data/hora preferida | 🔴 Alta | 2 |
+| RF011.4 | Validação em tempo real (frontend) | 🟡 Média | 2 |
+| RF011.5 | Ao submeter, salvar pré-agendamento no sistema | 🔴 Alta | 2 |
+| RF011.6 | Ao submeter, abrir WhatsApp do professor | 🔴 Alta | 2 |
+| RF011.7 | Mensagem WhatsApp pré-formatada com dados | 🔴 Alta | 2 |
+| RF011.8 | Professor vê lista de pré-agendamentos no admin | 🔴 Alta | 2 |
+| RF011.9 | Professor pode confirmar pré-agendamento | 🟡 Média | 2 |
+| RF011.10 | Professor pode cancelar pré-agendamento | 🟡 Média | 2 |
+| RF011.11 | Converter pré-agendamento em aluno (1 clique) | 🟡 Média | 3 |
+| RF011.12 | Personalizar slug do link | 🟡 Média | 2 |
+| RF011.13 | Personalizar cores e logo do formulário | 🟡 Média | 3 |
+| RF011.14 | reCAPTCHA para evitar spam | 🟡 Média | 3 |
+| RF011.15 | Gerar QR Code do link | 🟡 Média | 3 |
+
+---
+
+### 2.12 RF012 - FORMULÁRIO PÚBLICO DE PRÉ-MATRÍCULA
+
+| ID | Descrição | Prioridade | Sprint |
+|----|-----------|------------|--------|
+| RF012.1 | Gerar link público único (/matricula/:slug) | 🔴 Alta | 2 |
+| RF012.2 | Formulário completo com dados do aluno | 🔴 Alta | 2 |
+| RF012.3 | Upload de documentos (RG, CPF, comprovante) | 🟡 Média | 3 |
+| RF012.4 | Gerar contrato digital automaticamente | 🔴 Alta | 2 |
+| RF012.5 | Assinatura eletrônica (checkbox + timestamp + IP) | 🔴 Alta | 2 |
+| RF012.6 | Ao submeter, salvar pré-matrícula + abrir WhatsApp | 🔴 Alta | 2 |
+| RF012.7 | Professor aprova ou rejeita matrícula | 🔴 Alta | 2 |
+| RF012.8 | Converter em aluno oficial (1 clique) | 🔴 Alta | 2 |
+| RF012.9 | Gerar primeira mensalidade automaticamente na conversão | 🟡 Média | 3 |
+| RF012.10 | Enviar email de confirmação ao interessado | 🟡 Média | 3 |
+| RF012.11 | Professor edita template de contrato | 🟡 Média | 2 |
+| RF012.12 | Validar CPF único (não pode duplicar) | 🔴 Alta | 2 |
+| RF012.13 | Dados de responsável (se menor de 18 anos) | 🔴 Alta | 2 |
+| RF012.14 | Buscar CEP automaticamente (API ViaCEP) | 🟡 Média | 2 |
+
+---
+
+## 3. REQUISITOS NÃO-FUNCIONAIS
+
+### 3.1 RNF001 - PERFORMANCE
+
+| ID | Descrição | Métrica | Prioridade |
+|----|-----------|---------|------------|
+| RNF001.1 | Tempo de carregamento inicial | < 3 segundos | 🔴 Alta |
+| RNF001.2 | Tempo de carregamento do dashboard | < 2 segundos | 🔴 Alta |
+| RNF001.3 | Tempo de resposta da API | < 500ms (95% req) | 🔴 Alta |
+| RNF001.4 | Tempo de geração de PIX | < 3 segundos | 🔴 Alta |
+| RNF001.5 | Suportar requisições simultâneas | 100 req/s | 🟡 Média |
+| RNF001.6 | Cache de dados do dashboard | 5 minutos | 🟡 Média |
+| RNF001.7 | Otimização de imagens | Lazy loading | 🟡 Média |
+| RNF001.8 | Minificação de assets (JS/CSS) | Sim | 🔴 Alta |
+
+---
+
+### 3.2 RNF002 - USABILIDADE
+
+| ID | Descrição | Métrica | Prioridade |
+|----|-----------|---------|------------|
+| RNF002.1 | Interface intuitiva | Não requer treinamento | 🔴 Alta |
+| RNF002.2 | Design mobile-first | 100% responsivo | 🔴 Alta |
+| RNF002.3 | Máximo de cliques para ação | ≤ 3 cliques | 🔴 Alta |
+| RNF002.4 | Feedback visual | Todas ações | 🔴 Alta |
+| RNF002.5 | Mensagens de erro claras | Linguagem simples | 🔴 Alta |
+| RNF002.6 | Acessibilidade (WCAG 2.1) | Nível AA | 🟡 Média |
+| RNF002.7 | Atalhos de teclado | Principais ações | ⚪ Baixa |
+| RNF002.8 | Tour guiado (onboarding) | Sim | 🟡 Média |
+
+---
+
+### 3.3 RNF003 - SEGURANÇA
+
+| ID | Descrição | Implementação | Prioridade |
+|----|-----------|--------------|------------|
+| RNF003.1 | Comunicação segura | HTTPS obrigatório | 🔴 Alta |
+| RNF003.2 | Hash de senhas | bcrypt (rounds: 12) | 🔴 Alta |
+| RNF003.3 | Autenticação | JWT + Refresh Token | 🔴 Alta |
+| RNF003.4 | Expiração de tokens | Access: 15min, Refresh: 7d | 🔴 Alta |
+| RNF003.5 | Proteção CSRF | Token CSRF | 🔴 Alta |
+| RNF003.6 | Rate limiting | 100 req/min por IP | 🔴 Alta |
+| RNF003.7 | Criptografia de dados sensíveis | AES-256 | 🔴 Alta |
+| RNF003.8 | Validação de entrada | Server-side sempre | 🔴 Alta |
+| RNF003.9 | Sanitização de dados | SQL Injection, XSS | 🔴 Alta |
+| RNF003.10 | Logs de auditoria | Ações críticas | 🟡 Média |
+| RNF003.11 | Backup criptografado | Diário | 🔴 Alta |
+
+---
+
+### 3.4 RNF004 - DISPONIBILIDADE
+
+| ID | Descrição | Métrica | Prioridade |
+|----|-----------|---------|------------|
+| RNF004.1 | Uptime mínimo | 99.5% | 🔴 Alta |
+| RNF004.2 | Backup automático | Diário (3h da manhã) | 🔴 Alta |
+| RNF004.3 | Retenção de backups | 30 dias | 🔴 Alta |
+| RNF004.4 | RTO (Recovery Time Objective) | < 4 horas | 🟡 Média |
+| RNF004.5 | RPO (Recovery Point Objective) | < 24 horas | 🟡 Média |
+| RNF004.6 | Monitoramento | 24/7 | 🔴 Alta |
+| RNF004.7 | Alertas automáticos | Downtime, erros críticos | 🔴 Alta |
+
+---
+
+### 3.5 RNF005 - ESCALABILIDADE
+
+| ID | Descrição | Capacidade | Prioridade |
+|----|-----------|-----------|------------|
+| RNF005.1 | Número de professores | Até 10.000 | 🟡 Média |
+| RNF005.2 | Número de alunos | Até 500.000 | 🟡 Média |
+| RNF005.3 | Número de mensalidades | Até 1.000.000 | 🟡 Média |
+| RNF005.4 | Arquitetura stateless | Horizontal scaling | 🔴 Alta |
+| RNF005.5 | Banco de dados | Suporta sharding | 🟡 Média |
+| RNF005.6 | CDN para assets estáticos | Sim | 🟡 Média |
+| RNF005.7 | Load balancer | Auto-scaling | 🟡 Média |
+
+---
+
+### 3.6 RNF006 - COMPATIBILIDADE
+
+| ID | Descrição | Suporte | Prioridade |
+|----|-----------|---------|------------|
+| RNF006.1 | Navegadores desktop | Chrome, Firefox, Safari, Edge (últimas 2 versões) | 🔴 Alta |
+| RNF006.2 | Navegadores mobile | Chrome Mobile, Safari Mobile | 🔴 Alta |
+| RNF006.3 | Sistemas operacionais mobile | iOS 13+, Android 8+ | 🔴 Alta |
+| RNF006.4 | Resoluções suportadas | 320px - 2560px | 🔴 Alta |
+| RNF006.5 | Progressive Web App (PWA) | Instalável | 🟡 Média |
+| RNF006.6 | Modo offline (leitura) | Sim | ⚪ Baixa |
+
+---
+
+### 3.7 RNF007 - MANUTENIBILIDADE
+
+| ID | Descrição | Implementação | Prioridade |
+|----|-----------|--------------|------------|
+| RNF007.1 | Código documentado | JSDoc, comentários | 🔴 Alta |
+| RNF007.2 | Testes automatizados | Coverage > 80% | 🔴 Alta |
+| RNF007.3 | Testes unitários | Jest | 🔴 Alta |
+| RNF007.4 | Testes de integração | Supertest | 🟡 Média |
+| RNF007.5 | Testes E2E | Playwright/Cypress | 🟡 Média |
+| RNF007.6 | Logs estruturados | Winston/Pino | 🔴 Alta |
+| RNF007.7 | Monitoramento de erros | Sentry | 🔴 Alta |
+| RNF007.8 | Linter | ESLint | 🔴 Alta |
+| RNF007.9 | Formatação de código | Prettier | 🔴 Alta |
+| RNF007.10 | Versionamento semântico | SemVer | 🔴 Alta |
+
+---
+
+### 3.8 RNF008 - CONFORMIDADE
+
+| ID | Descrição | Padrão | Prioridade |
+|----|-----------|--------|------------|
+| RNF008.1 | LGPD (Lei Geral de Proteção de Dados) | Compliance total | 🔴 Alta |
+| RNF008.2 | Termo de uso | Exibido e aceito | 🔴 Alta |
+| RNF008.3 | Política de privacidade | Exibida e aceita | 🔴 Alta |
+| RNF008.4 | Direito ao esquecimento | Export + Delete dados | 🔴 Alta |
+| RNF008.5 | Consentimento explícito | Opt-in | 🔴 Alta |
+| RNF008.6 | Criptografia de dados pessoais | AES-256 | 🔴 Alta |
+
+---
+
+## 4. REGRAS DE NEGÓCIO
+
+### 4.1 RN001-009 - GLOBAIS
+
+**RN001 - Multi-Tenancy**
+- Cada professor é isolado (tenant)
+- Queries sempre filtradas por `user_id`
+- Índices incluem `user_id`
+
+**RN002 - Soft Delete**
+- Exclusões lógicas (`deleted_at`)
+- Mantém histórico para auditoria
+
+**RN003 - Auditoria**
+- Registrar `created_at`, `updated_at`, `created_by`
+- Logs de ações sensíveis
+
+**RN004-009** - Validações padrão de email, senha, telefone, valores monetários, data/hora e paginação
+
+### 4.2 RN010-029 - ALUNOS E TIPOS DE AULA
+
+**RN010-019** - Regras de cadastro, validação e gestão de alunos
+**RN020-029** - Regras de tipos de aula, preços e exclusão
+
+### 4.3 RN030-049 - MENSALIDADES
+
+**RN030** - Unicidade: não duplicar aluno + mês + ano
+**RN031** - Status inicial: "pendente"
+**RN032** - Vencimento padrão: dia 10 (configurável)
+**RN033** - Status "vencida" atualizado automaticamente
+**RN034** - Multa padrão: 2%
+**RN035** - Juros padrão: 1% ao mês
+**RN036** - Fórmula: `valor_final = valor_original + multa + juros`
+**RN037** - PIX expira em 24h
+**RN038** - Um PIX por mensalidade
+**RN039-049** - Regras de geração em lote, baixa de pagamento, cancelamento e edição
+
+### 4.4 RN050-069 - EFIBANK E PAGAMENTOS
+
+**RN050** - Credenciais criptografadas (AES-256)
+**RN051** - Ambientes: sandbox/produção
+**RN052-059** - Regras de geração PIX, webhook, validação de assinatura, boletos e consultas
+
+### 4.5 RN060-079 - NOTIFICAÇÕES WHATSAPP
+
+**RN060** - Mensagem máxima: 1.000 caracteres
+**RN061** - Protocolo: `https://wa.me/[phone]?text=[message]`
+**RN062** - Registrar timestamp da tentativa
+**RN063** - Substituição de variáveis dinâmicas
+**RN064-079** - Regras de histórico, templates, envio em lote
+
+### 4.6 RN080-099 - AGENDA E PRESENÇA
+
+**RN080** - Presença marcada após data/hora da aula
+**RN081** - Falta justificada não entra no cálculo negativo
+**RN082** - Percentual: `(Presenças / Total) * 100`
+**RN083-099** - Regras de agendamento, cancelamento, recorrência
+
+### 4.7 RN100-119 - FORMULÁRIOS PÚBLICOS
+
+**RN100** - Link único por professor (slug validado)
+**RN101** - Formulário acessível 24/7 sem autenticação
+**RN102** - Telefone validado (regex Brasil)
+**RN103** - Status inicial pré-agendamento: "pendente"
+**RN104** - Ao submeter: salvar + abrir WhatsApp
+**RN105** - Notificação in-app imediata
+**RN106** - Não permitir agendamento de datas passadas
+**RN110** - CPF validado e único por professor
+**RN111** - Email validado e único por professor
+**RN112** - Menor de 18: dados do responsável obrigatórios
+**RN113** - Contrato gerado dinamicamente
+**RN114** - Aceite registrado: timestamp + IP
+**RN115** - Status inicial matrícula: "pendente_aprovacao"
+**RN116** - Auto-rejeita após 7 dias sem resposta
+**RN117** - Documentos criptografados
+**RN118** - Professor pode personalizar cláusulas
+**RN119** - Na conversão: criar aluno + gerar mensalidade
+
+---
+
+## 5. INTEGRAÇÕES EXTERNAS
+
+### 5.1 EfiBank (Gerencianet)
+
+**Autenticação:**
+- OAuth 2.0 Client Credentials
+- Certificado .pem obrigatório
+
+**Endpoints:**
+```
+POST /oauth/token - Autenticação
+POST /v2/cob - Criar cobrança PIX
+GET /v2/cob/:txid - Consultar PIX
+POST /v1/carnet - Criar boleto
+Webhook: POST /webhook/efibank
+```
+
+**Fluxo PIX:**
+1. Professor clica "Gerar PIX"
+2. Sistema chama API EfiBank
+3. Recebe: txid, PIX copia e cola, QR Code
+4. Salva na mensalidade
+5. Aluno paga
+6. EfiBank envia webhook
+7. Sistema valida assinatura
+8. Atualiza status para "paga"
+9. Notifica professor
+
+**Webhook Payload:**
+```json
+{
+  "evento": "pix",
+  "data_evento": "2024-12-30T10:30:00Z",
+  "pix": [{
+    "txid": "7978c0c97ea847e78e8849634473c1f1",
+    "valor": "250.00",
+    "horario": "2024-12-30T10:29:55Z"
+  }]
+}
+```
+
+### 5.2 ViaCEP
+
+**Endpoint:**
+```
+GET https://viacep.com.br/ws/{cep}/json/
+```
+
+**Uso:** Buscar endereço automaticamente no formulário de matrícula
+
+### 5.3 WhatsApp (Link Nativo)
+
+**Protocolo:**
+```
+https://wa.me/{phone}?text={message}
+```
+
+**Formato do telefone:** +5569999999999
+**Codificação:** URL encode da mensagem
+
+---
+
+## 6. MODELO DE DADOS
+
+### 6.1 Entidade: users (Professores)
+
+```sql
+id: UUID PRIMARY KEY
+email: VARCHAR(255) UNIQUE NOT NULL
+password_hash: VARCHAR(255) NOT NULL
+name: VARCHAR(255) NOT NULL
+phone: VARCHAR(20)
+photo_url: VARCHAR(500)
+specialty: VARCHAR(100)
+bio: TEXT
+
+-- Dados Bancários
+pix_key: VARCHAR(255)
+pix_key_type: ENUM('cpf','email','phone','random')
+bank_name: VARCHAR(100)
+bank_agency: VARCHAR(10)
+bank_account: VARCHAR(20)
+
+-- Configurações Financeiras
+default_due_day: INT DEFAULT 10
+late_fee_percent: DECIMAL(5,2) DEFAULT 2.00
+interest_percent: DECIMAL(5,2) DEFAULT 1.00
+pix_validity_hours: INT DEFAULT 24
+boleto_validity_days: INT DEFAULT 7
+
+-- EfiBank
+efibank_client_id: VARCHAR(255) ENCRYPTED
+efibank_client_secret: VARCHAR(255) ENCRYPTED
+efibank_certificate: TEXT ENCRYPTED
+efibank_environment: ENUM('sandbox','production')
+
+-- Notificações
+notify_in_app: BOOLEAN DEFAULT TRUE
+notify_email: BOOLEAN DEFAULT TRUE
+notification_email: VARCHAR(255)
+
+-- Timestamps
+created_at: TIMESTAMP DEFAULT NOW()
+updated_at: TIMESTAMP DEFAULT NOW()
+deleted_at: TIMESTAMP NULL
+
+INDEX idx_email (email)
+```
+
+### 6.2 Entidade: class_types
+
+```sql
+id: UUID PRIMARY KEY
+user_id: UUID FOREIGN KEY REFERENCES users
+name: VARCHAR(100) NOT NULL
+description: TEXT
+default_price: DECIMAL(10,2) NOT NULL
+color: VARCHAR(7) DEFAULT '#3B82F6'
+is_active: BOOLEAN DEFAULT TRUE
+created_at: TIMESTAMP DEFAULT NOW()
+updated_at: TIMESTAMP DEFAULT NOW()
+deleted_at: TIMESTAMP NULL
+
+UNIQUE(user_id, name, deleted_at)
+INDEX idx_user_active (user_id, is_active)
+```
+
+### 6.3 Entidade: students
+
+```sql
+id: UUID PRIMARY KEY
+user_id: UUID FOREIGN KEY REFERENCES users
+class_type_id: UUID FOREIGN KEY REFERENCES class_types
+name: VARCHAR(255) NOT NULL
+email: VARCHAR(255)
+phone: VARCHAR(20) NOT NULL
+whatsapp: VARCHAR(20) NOT NULL
+cpf: VARCHAR(14)
+birth_date: DATE
+address_zip: VARCHAR(9)
+address_street: VARCHAR(255)
+address_number: VARCHAR(10)
+address_complement: VARCHAR(100)
+address_neighborhood: VARCHAR(100)
+address_city: VARCHAR(100)
+address_state: VARCHAR(2)
+notes: TEXT
+is_active: BOOLEAN DEFAULT TRUE
+created_at: TIMESTAMP DEFAULT NOW()
+updated_at: TIMESTAMP DEFAULT NOW()
+deleted_at: TIMESTAMP NULL
+
+INDEX idx_user_active (user_id, is_active)
+INDEX idx_phone (phone)
+UNIQUE(user_id, email, deleted_at)
+UNIQUE(user_id, cpf, deleted_at)
+```
+
+### 6.4 Entidade: payments
+
+```sql
+id: UUID PRIMARY KEY
+user_id: UUID FOREIGN KEY REFERENCES users
+student_id: UUID FOREIGN KEY REFERENCES students
+reference_month: INT NOT NULL
+reference_year: INT NOT NULL
+original_amount: DECIMAL(10,2) NOT NULL
+final_amount: DECIMAL(10,2) NOT NULL
+due_date: DATE NOT NULL
+paid_date: DATE NULL
+payment_method: ENUM('pix','boleto','cash','transfer','other')
+status: ENUM('pending','overdue','paid','cancelled')
+efibank_txid: VARCHAR(255) UNIQUE
+pix_copy_paste: TEXT
+pix_qrcode_url: VARCHAR(500)
+pix_expires_at: TIMESTAMP
+boleto_url: VARCHAR(500)
+notes: TEXT
+created_at: TIMESTAMP DEFAULT NOW()
+updated_at: TIMESTAMP DEFAULT NOW()
+deleted_at: TIMESTAMP NULL
+
+INDEX idx_user_status (user_id, status, due_date)
+INDEX idx_student_ref (student_id, reference_year, reference_month)
+UNIQUE(student_id, reference_month, reference_year, deleted_at)
+```
+
+### 6.5 Entidade: notifications
+
+```sql
+id: UUID PRIMARY KEY
+user_id: UUID FOREIGN KEY REFERENCES users
+student_id: UUID FOREIGN KEY REFERENCES students
+payment_id: UUID FOREIGN KEY REFERENCES payments NULL
+type: ENUM('charge','reminder','notice','thanks')
+message_template: TEXT NOT NULL
+message_sent: TEXT NOT NULL
+sent_at: TIMESTAMP DEFAULT NOW()
+
+INDEX idx_user_sent (user_id, sent_at)
+INDEX idx_student_sent (student_id, sent_at)
+```
+
+### 6.6 Entidade: schedules
+
+```sql
+id: UUID PRIMARY KEY
+user_id: UUID FOREIGN KEY REFERENCES users
+student_id: UUID FOREIGN KEY REFERENCES students
+scheduled_at: TIMESTAMP NOT NULL
+duration_minutes: INT DEFAULT 60
+location: VARCHAR(255)
+status: ENUM('scheduled','completed','cancelled','missed')
+attendance: ENUM('present','absent','justified') NULL
+notes: TEXT
+created_at: TIMESTAMP DEFAULT NOW()
+updated_at: TIMESTAMP DEFAULT NOW()
+
+INDEX idx_user_scheduled (user_id, scheduled_at)
+INDEX idx_student_scheduled (student_id, scheduled_at)
+```
+
+### 6.7 Entidade: pre_bookings
+
+```sql
+id: UUID PRIMARY KEY
+user_id: UUID FOREIGN KEY REFERENCES users
+name: VARCHAR(255) NOT NULL
+phone: VARCHAR(20) NOT NULL
+email: VARCHAR(255)
+class_type_id: UUID FOREIGN KEY REFERENCES class_types
+preferred_date: DATE NOT NULL
+preferred_time: TIME NOT NULL
+age: INT
+source: VARCHAR(100)
+message: TEXT
+status: ENUM('pending','confirmed','converted','cancelled')
+ip_address: VARCHAR(45)
+user_agent: TEXT
+converted_to_student_id: UUID FOREIGN KEY REFERENCES students NULL
+confirmed_at: TIMESTAMP NULL
+cancelled_at: TIMESTAMP NULL
+cancellation_reason: TEXT
+created_at: TIMESTAMP DEFAULT NOW()
+updated_at: TIMESTAMP DEFAULT NOW()
+
+INDEX idx_user_status (user_id, status, created_at)
+```
+
+### 6.8 Entidade: pre_enrollments
+
+```sql
+id: UUID PRIMARY KEY
+user_id: UUID FOREIGN KEY REFERENCES users
+name: VARCHAR(255) NOT NULL
+cpf: VARCHAR(14) NOT NULL
+birth_date: DATE NOT NULL
+email: VARCHAR(255) NOT NULL
+phone: VARCHAR(20) NOT NULL
+rg: VARCHAR(20)
+address_zip: VARCHAR(9) NOT NULL
+address_street: VARCHAR(255) NOT NULL
+address_number: VARCHAR(10) NOT NULL
+address_complement: VARCHAR(100)
+address_neighborhood: VARCHAR(100) NOT NULL
+address_city: VARCHAR(100) NOT NULL
+address_state: VARCHAR(2) NOT NULL
+guardian_name: VARCHAR(255)
+guardian_cpf: VARCHAR(14)
+guardian_phone: VARCHAR(20)
+class_type_id: UUID FOREIGN KEY REFERENCES class_types
+due_day: INT NOT NULL
+source: VARCHAR(100)
+rg_document_url: VARCHAR(500)
+address_proof_url: VARCHAR(500)
+contract_text: TEXT NOT NULL
+contract_accepted: BOOLEAN DEFAULT FALSE
+contract_accepted_at: TIMESTAMP
+contract_ip: VARCHAR(45)
+terms_accepted: BOOLEAN DEFAULT FALSE
+status: ENUM('pending_approval','approved','converted','rejected','expired')
+rejection_reason: TEXT
+approved_at: TIMESTAMP NULL
+converted_to_student_id: UUID FOREIGN KEY REFERENCES students NULL
+converted_at: TIMESTAMP NULL
+ip_address: VARCHAR(45)
+user_agent: TEXT
+created_at: TIMESTAMP DEFAULT NOW()
+updated_at: TIMESTAMP DEFAULT NOW()
+
+INDEX idx_user_status (user_id, status, created_at)
+INDEX idx_cpf (cpf)
+```
+
+### 6.9 Entidade: public_form_settings
+
+```sql
+id: UUID PRIMARY KEY
+user_id: UUID FOREIGN KEY REFERENCES users UNIQUE
+booking_slug: VARCHAR(100) UNIQUE NOT NULL
+enrollment_slug: VARCHAR(100) UNIQUE NOT NULL
+logo_url: VARCHAR(500)
+primary_color: VARCHAR(7) DEFAULT '#3B82F6'
+secondary_color: VARCHAR(7) DEFAULT '#10B981'
+welcome_message: TEXT
+booking_enabled: BOOLEAN DEFAULT TRUE
+enrollment_enabled: BOOLEAN DEFAULT TRUE
+contract_template: TEXT NOT NULL
+contract_clauses: TEXT
+notify_email: BOOLEAN DEFAULT TRUE
+notify_in_app: BOOLEAN DEFAULT TRUE
+recaptcha_enabled: BOOLEAN DEFAULT FALSE
+max_submissions_per_day: INT DEFAULT 10
+created_at: TIMESTAMP DEFAULT NOW()
+updated_at: TIMESTAMP DEFAULT NOW()
+
+INDEX idx_booking_slug (booking_slug)
+INDEX idx_enrollment_slug (enrollment_slug)
+```
+
+---
+
+## 7. FLUXOS DE USUÁRIO
+
+### 7.1 Onboarding (Primeiro Acesso)
+
+```
+1. Cadastro (email/senha)
+2. Confirmar email
+3. Completar perfil
+4. Configurar dados financeiros
+5. Criar primeiro tipo de aula
+6. Cadastrar primeiro aluno
+7. Gerar primeira mensalidade
+8. Tour guiado
+```
+
+### 7.2 Cobrança Mensal Recorrente
+
+```
+1. Início do mês
+2. Dashboard
+3. "Gerar Mensalidades do Mês"
+4. Confirma geração
+5. Revisa inadimplentes
+6. Seleciona alunos
+7. "Cobrar Selecionados"
+8. WhatsApp abre sequencialmente
+9. Professor envia
+10. Aguarda pagamentos
+```
+
+### 7.3 Pagamento via PIX
+
+```
+1. Aluno recebe cobrança
+2. Copia PIX
+3. Abre app do banco
+4. Faz pagamento
+5. EfiBank processa
+6. Webhook → Sistema
+7. Status: Paga
+8. Notificação professor
+9. Professor confirma
+```
+
+### 7.4 Formulário Público
+
+```
+1. Interessado acessa link
+2. Preenche formulário
+3. Submete
+4. Sistema salva
+5. Abre WhatsApp
+6. Envia mensagem
+7. Professor recebe notificação
+8. Professor responde
+9. Professor confirma/converte
+```
+
+---
+
+## 8. SEGURANÇA E COMPLIANCE
+
+### 8.1 LGPD - Conformidade
+
+**Direitos do Titular:**
+- Acesso aos dados
+- Correção de dados
+- Exclusão de dados (direito ao esquecimento)
+- Portabilidade (export JSON)
+
+**Implementação:**
+- Criptografia de dados sensíveis (AES-256)
+- Logs de acesso e alterações
+- Termo de uso e política de privacidade
+- Consentimento explícito
+- DPO designado (futuro)
+
+### 8.2 Segurança de Senha
+
+- Hash: bcrypt (12 rounds)
+- Validação: mín. 8 caracteres, 1 letra, 1 número
+- Recuperação: token expira em 1 hora
+- Força da senha: indicador visual
+
+### 8.3 Autenticação
+
+- JWT: Access Token (15 min) + Refresh Token (7 dias)
+- HTTPS obrigatório
+- Rate limiting: 100 req/min por IP
+- CSRF protection
+
+### 8.4 Dados Sensíveis
+
+**Criptografados (AES-256):**
+- Credenciais EfiBank
+- Documentos uploadados
+- Dados bancários
+
+**Logs de Auditoria:**
+- Login/logout
+- Alteração de valores
+- Exclusão de dados
+- Acesso a dados sensíveis
+
+---
+
+## 9. ROADMAP DE DESENVOLVIMENTO
+
+### Sprint 1 (2 semanas) - MVP Core
+
+**Objetivo:** Sistema funcional básico
+
+- ✅ Autenticação (login/cadastro/logout)
+- ✅ CRUD Tipos de Aula
+- ✅ CRUD Alunos
+- ✅ CRUD Mensalidades (sem PIX)
+- ✅ Dashboard básico
+- ✅ Notificação WhatsApp (link)
+- ✅ Deploy teste
+
+**Entregável:** Professor gerencia alunos e mensalidades
+
+---
+
+### Sprint 2 (2 semanas) - Financeiro + EfiBank
+
+**Objetivo:** Automatizar cobranças
+
+- ✅ Integração EfiBank (PIX)
+- ✅ Webhook EfiBank
+- ✅ Gráficos Dashboard
+- ✅ Filtros avançados
+- ✅ Templates notificação
+- ✅ Histórico notificações
+- ✅ Formulários públicos (pré-agendamento + matrícula)
+- ✅ Contratos digitais
+
+**Entregável:** Professor gera PIX e recebe baixa automática + captação de leads
+
+---
+
+### Sprint 3 (2 semanas) - Relatórios + UX
+
+**Objetivo:** Melhorar usabilidade
+
+- ✅ Relatórios exportáveis
+- ✅ Agenda de aulas
+- ✅ Controle de presença
+- ✅ Geração de boleto
+- ✅ Configurações avançadas
+- ✅ Melhorias UX
+
+**Entregável:** Sistema completo profissional
+
+---
+
+### Sprint 4 (2 semanas) - Polimento + Lançamento
+
+**Objetivo:** Produção
+
+- ✅ Testes E2E
+- ✅ Onboarding guiado
+- ✅ Tour interativo
+- ✅ Documentação
+- ✅ Otimizações
+- ✅ Deploy produção
+- ✅ Beta fechado
+
+**Entregável:** Produto pronto para clientes
+
+
+## 10. STACK TECNOLÓGICA
+
+### Frontend
+- **bootstrap
+### Backend
+- **php
+### Infraestrutura
+- **
+---
+
+## 11. CRITÉRIOS DE SUCESSO
+
+### Técnicos
+- ✅ 100% endpoints com testes
+- ✅ Coverage > 80%
+- ✅ Performance < 3s
+- ✅ Zero critical bugs
+- ✅ Uptime > 99%
+
+### Negócio
+- ✅ 50 professores beta em 1 mês
+- ✅ NPS > 40
+- ✅ Churn < 10%/mês
+- ✅ 10% conversão free → paid
+
+### Usuário
+- ✅ Cadastro aluno < 1 min
+- ✅ Cobrança < 30s
+- ✅ Satisfação > 4.5/5
+- ✅ Onboarding < 5 min
+
+---
+
+**Fim do Documento**
+
+---
+
+**Próximos Documentos:**
+1. Diagrama ERD visual
+2. Especificação completa API REST
+3. Protótipos detalhados (Figma)
+4. Plano de testes
+5. Manual do usuário
