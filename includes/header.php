@@ -66,6 +66,9 @@
             <a href="<?php echo SITE_URL; ?>/contratos_config.php" class="list-group-item list-group-item-action list-group-item-light px-2 py-2 <?php echo basename($_SERVER['PHP_SELF']) == 'contratos_config.php' ? 'active' : ''; ?>">
                 <i class="fas fa-file-contract me-2 fixed-width-icon"></i> Contrato
             </a>
+            <a href="<?php echo SITE_URL; ?>/assinatura_sistema.php" class="list-group-item list-group-item-action list-group-item-light px-2 py-2 <?php echo basename($_SERVER['PHP_SELF']) == 'assinatura_sistema.php' ? 'active' : ''; ?>">
+                <i class="fas fa-crown me-2 fixed-width-icon"></i> Assinatura
+            </a>
             <a href="<?php echo SITE_URL; ?>/perfil.php" class="list-group-item list-group-item-action list-group-item-light px-2 py-2 <?php echo basename($_SERVER['PHP_SELF']) == 'perfil.php' ? 'active' : ''; ?>">
                 <i class="fas fa-user-cog me-2 fixed-width-icon"></i> Meu Perfil
             </a>
@@ -98,6 +101,18 @@
                             <?php echo $pending_pre_registrations; ?>
                         </span>
                     </a>
+                    <?php endif; ?>
+
+                    <?php if (function_exists('isSystemSubscriptionActive')): ?>
+                        <?php if (isSystemSubscriptionActive($_SESSION['user_id'])): ?>
+                            <a href="<?php echo SITE_URL; ?>/assinatura_sistema.php" class="text-decoration-none me-3" title="Assinatura ativa">
+                                <span class="badge bg-success">Plano ativo</span>
+                            </a>
+                        <?php else: ?>
+                            <a href="<?php echo SITE_URL; ?>/assinatura_sistema.php" class="text-decoration-none me-3" title="Assinatura inativa">
+                                <span class="badge bg-warning text-dark">Plano inativo</span>
+                            </a>
+                        <?php endif; ?>
                     <?php endif; ?>
 
                     <div class="dropdown">

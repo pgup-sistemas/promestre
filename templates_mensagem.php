@@ -31,10 +31,10 @@ $historico = $stmt_hist->fetchAll();
 require_once 'includes/header.php';
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1><i class="fas fa-comment-dots me-2"></i> Templates de Mensagem</h1>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTemplate">
-        <i class="fas fa-plus me-2"></i> Novo Template
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+    <h1 class="h4 mb-0"><i class="fas fa-comment-dots me-2"></i> Templates de Mensagem</h1>
+    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalTemplate">
+        <i class="fas fa-plus me-1"></i> Novo Template
     </button>
 </div>
 
@@ -46,88 +46,108 @@ require_once 'includes/header.php';
     <div class="alert alert-success"><?php echo $success; ?></div>
 <?php endif; ?>
 
-<!-- Lista de Templates -->
-<div class="row mb-4">
-    <?php foreach ($templates as $template): ?>
-        <div class="col-md-6 mb-3">
-            <div class="card h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <strong><?php echo htmlspecialchars($template['nome']); ?></strong>
-                    <span class="badge bg-secondary"><?php echo ucfirst($template['tipo']); ?></span>
-                </div>
-                <div class="card-body">
-                    <p class="card-text"><?php echo nl2br(htmlspecialchars($template['template'])); ?></p>
-                    <small class="text-muted">
-                        Variáveis disponíveis: [NOME], [VALOR], [DATA_VENCIMENTO], [PIX], [BOLETO]
-                    </small>
-                </div>
-                <div class="card-footer d-flex justify-content-between">
-                    <div>
-                        <?php if ($template['ativo']): ?>
-                            <span class="badge bg-success">Ativo</span>
-                        <?php else: ?>
-                            <span class="badge bg-secondary">Inativo</span>
-                        <?php endif; ?>
-                    </div>
-                    <div>
-                        <a href="templates_mensagem_editar.php?id=<?php echo $template['id']; ?>" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-edit"></i> Editar
-                        </a>
-                        <a href="templates_mensagem_excluir.php?id=<?php echo $template['id']; ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza?')">
-                            <i class="fas fa-trash"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <?php endforeach; ?>
-    
-    <?php if (count($templates) == 0): ?>
-        <div class="col-12">
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                Nenhum template cadastrado. Clique em "Novo Template" para criar.
-            </div>
-        </div>
-    <?php endif; ?>
-</div>
 
-<!-- Histórico de Notificações -->
-<div class="card">
-    <div class="card-header">
-        <h5 class="mb-0"><i class="fas fa-history me-2"></i> Histórico de Notificações Enviadas</h5>
+<ul class="nav nav-tabs" id="templatesTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tab-templates" data-bs-toggle="tab" data-bs-target="#pane-templates" type="button" role="tab" aria-controls="pane-templates" aria-selected="true">
+            Templates
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-historico" data-bs-toggle="tab" data-bs-target="#pane-historico" type="button" role="tab" aria-controls="pane-historico" aria-selected="false">
+            Histórico
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content border border-top-0 rounded-bottom p-3" id="templatesTabsContent">
+    <div class="tab-pane fade show active" id="pane-templates" role="tabpanel" aria-labelledby="tab-templates" tabindex="0">
+        <!-- Lista de Templates -->
+        <div class="row">
+            <?php foreach ($templates as $template): ?>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header d-flex justify-content-between align-items-center py-2">
+                            <strong><?php echo htmlspecialchars($template['nome']); ?></strong>
+                            <span class="badge bg-secondary"><?php echo ucfirst($template['tipo']); ?></span>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text mb-2"><?php echo nl2br(htmlspecialchars($template['template'])); ?></p>
+                            <small class="text-muted">
+                                Variáveis: [NOME], [VALOR], [DATA_VENCIMENTO], [PIX], [BOLETO]
+                            </small>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between align-items-center">
+                            <div>
+                                <?php if ($template['ativo']): ?>
+                                    <span class="badge bg-success">Ativo</span>
+                                <?php else: ?>
+                                    <span class="badge bg-secondary">Inativo</span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="templates_mensagem_editar.php?id=<?php echo $template['id']; ?>" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <a href="templates_mensagem_excluir.php?id=<?php echo $template['id']; ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+            
+            <?php if (count($templates) == 0): ?>
+                <div class="col-12">
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Nenhum template cadastrado. Clique em "Novo Template" para criar.
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
-    <div class="card-body">
-        <?php if (count($historico) > 0): ?>
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Data/Hora</th>
-                            <th>Aluno</th>
-                            <th>Tipo</th>
-                            <th>WhatsApp</th>
-                            <th>Mensagem</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($historico as $notif): ?>
-                            <tr>
-                                <td><?php echo date('d/m/Y H:i', strtotime($notif['enviado_em'])); ?></td>
-                                <td><?php echo htmlspecialchars($notif['aluno_nome'] ?? 'N/A'); ?></td>
-                                <td><span class="badge bg-info"><?php echo ucfirst($notif['tipo']); ?></span></td>
-                                <td><?php echo htmlspecialchars($notif['whatsapp']); ?></td>
-                                <td>
-                                    <small class="text-muted"><?php echo htmlspecialchars(substr($notif['mensagem_enviada'], 0, 100)); ?>...</small>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+
+    <div class="tab-pane fade" id="pane-historico" role="tabpanel" aria-labelledby="tab-historico" tabindex="0">
+        <!-- Histórico de Notificações -->
+        <div class="card shadow-sm">
+            <div class="card-header py-2">
+                <h6 class="mb-0"><i class="fas fa-history me-2"></i> Histórico de Notificações Enviadas</h6>
             </div>
-        <?php else: ?>
-            <p class="text-muted">Nenhuma notificação enviada ainda.</p>
-        <?php endif; ?>
+            <div class="card-body">
+                <?php if (count($historico) > 0): ?>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Aluno</th>
+                                    <th>Tipo</th>
+                                    <th class="d-none d-md-table-cell">WhatsApp</th>
+                                    <th>Mensagem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($historico as $notif): ?>
+                                    <tr>
+                                        <td><?php echo date('d/m/Y H:i', strtotime($notif['enviado_em'])); ?></td>
+                                        <td><?php echo htmlspecialchars($notif['aluno_nome'] ?? 'N/A'); ?></td>
+                                        <td><span class="badge bg-info"><?php echo ucfirst($notif['tipo']); ?></span></td>
+                                        <td class="d-none d-md-table-cell"><?php echo htmlspecialchars($notif['whatsapp']); ?></td>
+                                        <td>
+                                            <small class="text-muted"><?php echo htmlspecialchars(substr($notif['mensagem_enviada'], 0, 120)); ?>...</small>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else: ?>
+                    <p class="text-muted mb-0">Nenhuma notificação enviada ainda.</p>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -137,7 +157,7 @@ require_once 'includes/header.php';
         <div class="modal-content">
             <form method="POST" action="templates_mensagem_salvar.php">
                 <div class="modal-header">
-                    <h5 class="modal-title">Novo Template</h5>
+                    <h6 class="modal-title">Novo Template</h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">

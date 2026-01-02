@@ -9,12 +9,14 @@ $page_title = 'Minha Agenda';
 require_once 'includes/header.php';
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1><i class="fas fa-calendar-alt me-2"></i> Minha Agenda</h1>
-    <a href="agenda_cadastro.php" class="btn btn-primary"><i class="fas fa-plus me-2"></i> Novo Agendamento</a>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+    <h1 class="h4 mb-0"><i class="fas fa-calendar-alt me-2"></i> Minha Agenda</h1>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="agenda_cadastro.php" class="btn btn-primary btn-sm"><i class="fas fa-plus me-1"></i> Novo Agendamento</a>
+    </div>
 </div>
 
-<div class="card shadow mb-4">
+<div class="card shadow-sm mb-4">
     <div class="card-body">
         <div id="calendar"></div>
     </div>
@@ -22,22 +24,39 @@ require_once 'includes/header.php';
 
 <!-- Modal Detalhes do Evento -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="eventTitle">Detalhes do Agendamento</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p><strong>Horário:</strong> <span id="eventTime"></span></p>
-                <p><strong>Aluno:</strong> <span id="eventAluno"></span></p>
-                <p><strong>Status:</strong> <span id="eventStatus"></span></p>
-                <p><strong>Presença:</strong> <span id="eventPresenca"></span></p>
-                <p><strong>Observações:</strong> <span id="eventObs"></span></p>
+                <div class="list-group list-group-flush mb-3">
+                    <div class="list-group-item px-0">
+                        <div class="text-muted small">Horário</div>
+                        <div class="fw-semibold" id="eventTime"></div>
+                    </div>
+                    <div class="list-group-item px-0">
+                        <div class="text-muted small">Aluno</div>
+                        <div class="fw-semibold" id="eventAluno"></div>
+                    </div>
+                    <div class="list-group-item px-0">
+                        <div class="text-muted small">Status</div>
+                        <div id="eventStatus"></div>
+                    </div>
+                    <div class="list-group-item px-0">
+                        <div class="text-muted small">Presença</div>
+                        <div id="eventPresenca"></div>
+                    </div>
+                    <div class="list-group-item px-0">
+                        <div class="text-muted small">Observações</div>
+                        <div id="eventObs"></div>
+                    </div>
+                </div>
 
                 <!-- Attendance Controls -->
                 <div id="attendanceControls" class="mt-3 d-none">
-                    <h6>Controle de Presença:</h6>
+                    <div class="fw-semibold mb-2">Controle de Presença</div>
                     <div class="btn-group w-100" role="group">
                         <button type="button" class="btn btn-success btn-sm" onclick="marcarPresenca('presente')">Presente</button>
                         <button type="button" class="btn btn-warning btn-sm" onclick="marcarPresenca('ausente')">Ausente</button>
@@ -46,18 +65,18 @@ require_once 'includes/header.php';
                 </div>
 
                 <div class="d-grid gap-2 mt-4">
-                    <a id="btnWhatsapp" href="#" target="_blank" class="btn btn-success d-none">
-                        <i class="fab fa-whatsapp me-2"></i> Confirmar no WhatsApp
+                    <a id="btnWhatsapp" href="#" target="_blank" class="btn btn-success btn-sm d-none">
+                        <i class="fab fa-whatsapp me-1"></i> Confirmar no WhatsApp
                     </a>
                     <div class="row g-2">
                         <div class="col-6">
-                            <a id="btnEdit" href="#" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-edit me-2"></i> Editar
+                            <a id="btnEdit" href="#" class="btn btn-outline-primary btn-sm w-100">
+                                <i class="fas fa-edit me-1"></i> Editar
                             </a>
                         </div>
                         <div class="col-6">
-                            <a id="btnDelete" href="#" class="btn btn-outline-danger w-100" onclick="return confirm('Tem certeza que deseja excluir?');">
-                                <i class="fas fa-trash me-2"></i> Excluir
+                            <a id="btnDelete" href="#" class="btn btn-outline-danger btn-sm w-100" onclick="return confirm('Tem certeza que deseja excluir?');">
+                                <i class="fas fa-trash me-1"></i> Excluir
                             </a>
                         </div>
                     </div>

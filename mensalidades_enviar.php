@@ -5,6 +5,8 @@ if (!isLoggedIn()) {
     redirect('index.php');
 }
 
+requireActiveSystemSubscription();
+
 $page_title = 'Enviar Cobranças';
 $professor_id = $_SESSION['user_id'];
 

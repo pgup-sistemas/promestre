@@ -64,9 +64,9 @@ $stmt->execute($params);
 $mensalidades = $stmt->fetchAll();
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1><i class="fas fa-barcode me-2"></i> Meus Boletos</h1>
-    <a href="mensalidades.php" class="btn btn-primary"><i class="fas fa-plus me-2"></i> Nova Mensalidade</a>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+    <h1 class="h4 mb-0"><i class="fas fa-barcode me-2"></i> Meus Boletos</h1>
+    <a href="mensalidades.php" class="btn btn-primary btn-sm"><i class="fas fa-plus me-1"></i> Nova Mensalidade</a>
 </div>
 
 <!-- Filtros -->
@@ -124,7 +124,7 @@ $mensalidades = $stmt->fetchAll();
 <!-- Tabela de Boletos -->
 <div class="card shadow">
     <div class="card-header">
-        <h5 class="mb-0">Boletos Gerados</h5>
+        <h6 class="mb-0">Boletos Gerados</h6>
     </div>
     <div class="card-body">
         <?php if (empty($mensalidades)): ?>

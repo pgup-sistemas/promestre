@@ -10,7 +10,8 @@ $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = clean($_POST['nome']);
-    $email = clean($_POST['email']);
+    $email = strtolower(trim((string)($_POST['email'] ?? '')));
+    $email = clean($email);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
     $telefone = clean($_POST['telefone']);

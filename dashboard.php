@@ -60,6 +60,18 @@ require_once 'includes/header.php';
     <a href="agendar.php?p=<?php echo $_SESSION['user_slug'] ?? ''; ?>" target="_blank" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-external-link-alt fa-sm text-white-50"></i> Ver Link de Agendamento</a>
 </div>
 
+<?php if (!isSystemSubscriptionActive($professor_id)): ?>
+    <div class="alert alert-warning shadow-sm d-flex justify-content-between align-items-center" role="alert">
+        <div>
+            <div class="fw-bold">Assinatura inativa</div>
+            <div class="small">Alguns recursos (PIX, cartão, recorrência e envio de cobranças) estão bloqueados até a ativação.</div>
+        </div>
+        <a href="assinatura_sistema.php" class="btn btn-sm btn-primary">
+            <i class="fas fa-crown me-2"></i> Assinar / Reativar
+        </a>
+    </div>
+<?php endif; ?>
+
 <div class="row">
     <!-- Card Alunos -->
     <div class="col-xl-4 col-md-6 mb-4">

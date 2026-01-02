@@ -16,9 +16,9 @@ $tipos = $stmt->fetchAll();
 require_once 'includes/header.php';
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1><i class="fas fa-chalkboard me-2"></i> Tipos de Aula</h1>
-    <a href="tipos_aula_cadastro.php" class="btn btn-primary"><i class="fas fa-plus me-2"></i> Novo Tipo</a>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+    <h1 class="h4 mb-0"><i class="fas fa-chalkboard me-2"></i> Tipos de Aula</h1>
+    <a href="tipos_aula_cadastro.php" class="btn btn-primary btn-sm"><i class="fas fa-plus me-1"></i> Novo Tipo</a>
 </div>
 
 <div class="row">
@@ -28,7 +28,7 @@ require_once 'includes/header.php';
                 <div class="card h-100 shadow-sm border-start border-5" style="border-left-color: <?php echo $tipo['cor']; ?> !important;">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="card-title fw-bold"><?php echo htmlspecialchars($tipo['nome']); ?></h5>
+                            <h6 class="card-title fw-bold"><?php echo htmlspecialchars($tipo['nome']); ?></h6>
                             <?php if ($tipo['ativo']): ?>
                                 <span class="badge bg-success">Ativo</span>
                             <?php else: ?>
@@ -36,7 +36,7 @@ require_once 'includes/header.php';
                             <?php endif; ?>
                         </div>
                         
-                        <h3 class="text-primary mb-3">R$ <?php echo number_format($tipo['preco_padrao'], 2, ',', '.'); ?> <small class="text-muted fs-6">/mês</small></h3>
+                        <h4 class="text-primary mb-3">R$ <?php echo number_format($tipo['preco_padrao'], 2, ',', '.'); ?> <small class="text-muted fs-6">/mês</small></h4>
                         
                         <p class="card-text text-muted small mb-3">
                             <?php echo $tipo['descricao'] ? htmlspecialchars($tipo['descricao']) : 'Sem descrição.'; ?>
@@ -58,7 +58,7 @@ require_once 'includes/header.php';
         <div class="col-12">
             <div class="alert alert-info text-center py-5">
                 <i class="fas fa-chalkboard-teacher fa-3x mb-3 opacity-50"></i>
-                <h4>Nenhum tipo de aula cadastrado</h4>
+                <h5>Nenhum tipo de aula cadastrado</h5>
                 <p>Comece criando os serviços que você oferece (ex: Piano, Inglês, Yoga).</p>
                 <a href="tipos_aula_cadastro.php" class="btn btn-primary mt-2">Cadastrar Primeiro Tipo</a>
             </div>

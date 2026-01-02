@@ -5,6 +5,8 @@ if (!isLoggedIn()) {
     redirect('index.php');
 }
 
+requireActiveSystemSubscription();
+
 $page_title = 'Gerar Boleto';
 require_once 'includes/header.php';
 

@@ -47,17 +47,17 @@ foreach ($mensalidades as $m) {
 require_once 'includes/header.php';
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1><i class="fas fa-file-invoice-dollar me-2"></i> Financeiro</h1>
-    <div class="btn-group">
-        <a href="mensalidades_enviar.php" class="btn btn-success"><i class="fas fa-paper-plane me-2"></i> Enviar Cobranças</a>
-        <a href="mensalidades_gerar.php" class="btn btn-primary"><i class="fas fa-plus me-2"></i> Nova Cobrança</a>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+    <h1 class="h4 mb-0"><i class="fas fa-file-invoice-dollar me-2"></i> Financeiro</h1>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="mensalidades_enviar.php" class="btn btn-success btn-sm"><i class="fas fa-paper-plane me-1"></i> Enviar Cobranças</a>
+        <a href="mensalidades_gerar.php" class="btn btn-primary btn-sm"><i class="fas fa-plus me-1"></i> Nova Cobrança</a>
     </div>
 </div>
 
-<div class="row mb-4">
-    <div class="col-md-4 mb-3">
-        <div class="card border-left-success shadow h-100 py-2" style="border-left: 4px solid var(--success-color);">
+<div class="row g-2 mb-3">
+    <div class="col-12 col-md-4">
+        <div class="card shadow-sm h-100" style="border-left: 4px solid var(--success-color);">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -71,8 +71,8 @@ require_once 'includes/header.php';
             </div>
         </div>
     </div>
-    <div class="col-md-4 mb-3">
-        <div class="card border-left-warning shadow h-100 py-2" style="border-left: 4px solid var(--warning-color);">
+    <div class="col-12 col-md-4">
+        <div class="card shadow-sm h-100" style="border-left: 4px solid var(--warning-color);">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -86,8 +86,8 @@ require_once 'includes/header.php';
             </div>
         </div>
     </div>
-    <div class="col-md-4 mb-3">
-        <div class="card border-left-danger shadow h-100 py-2" style="border-left: 4px solid var(--danger-color);">
+    <div class="col-12 col-md-4">
+        <div class="card shadow-sm h-100" style="border-left: 4px solid var(--danger-color);">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -105,8 +105,8 @@ require_once 'includes/header.php';
 
 <div class="card mb-4">
     <div class="card-body">
-        <form method="GET" class="row g-3">
-            <div class="col-md-3">
+        <form method="GET" class="row g-2 align-items-end">
+            <div class="col-12 col-md-3">
                 <select class="form-select" name="mes">
                     <?php 
                     $meses = [1=>'Janeiro', 2=>'Fevereiro', 3=>'Março', 4=>'Abril', 5=>'Maio', 6=>'Junho', 7=>'Julho', 8=>'Agosto', 9=>'Setembro', 10=>'Outubro', 11=>'Novembro', 12=>'Dezembro'];
@@ -115,10 +115,10 @@ require_once 'includes/header.php';
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-2">
+            <div class="col-12 col-md-2">
                 <input type="number" class="form-control" name="ano" value="<?php echo $ano; ?>">
             </div>
-            <div class="col-md-3">
+            <div class="col-12 col-md-3">
                 <select class="form-select" name="status">
                     <option value="todos" <?php echo $status == 'todos' ? 'selected' : ''; ?>>Todos os Status</option>
                     <option value="pendente" <?php echo $status == 'pendente' ? 'selected' : ''; ?>>Pendente</option>
@@ -127,8 +127,8 @@ require_once 'includes/header.php';
                     <option value="cancelado" <?php echo $status == 'cancelado' ? 'selected' : ''; ?>>Cancelado</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-secondary w-100">Filtrar</button>
+            <div class="col-12 col-md-2">
+                <button type="submit" class="btn btn-secondary btn-sm w-100">Filtrar</button>
             </div>
         </form>
     </div>
@@ -137,7 +137,7 @@ require_once 'includes/header.php';
 <div class="card shadow-sm">
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover table-sm align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
                         <th class="ps-4">Aluno</th>
@@ -184,6 +184,9 @@ require_once 'includes/header.php';
                                         <?php if ($m['status'] != 'pago'): ?>
                                             <a href="mensalidades_pix.php?id=<?php echo $m['id']; ?>" class="btn btn-sm btn-outline-info" title="Gerar/Ver PIX">
                                                 <i class="fa-brands fa-pix"></i>
+                                            </a>
+                                            <a href="mensalidades_cartao.php?id=<?php echo $m['id']; ?>" class="btn btn-sm btn-outline-dark" title="Pagar com Cartão">
+                                                <i class="fas fa-credit-card"></i>
                                             </a>
                                             <a href="mensalidades_pagar.php?id=<?php echo $m['id']; ?>" class="btn btn-sm btn-outline-success" title="Marcar como Pago (Dinheiro)">
                                                 <i class="fas fa-check"></i>

@@ -9,7 +9,8 @@ $page_title = 'Login';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = clean($_POST['email']);
+    $email = strtolower(trim((string)($_POST['email'] ?? '')));
+    $email = clean($email);
     $password = $_POST['password'];
 
     if (empty($email) || empty($password)) {
@@ -19,14 +20,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 
-        if ($user && password_verify($password, $user['senha'])) {
+        if (!$user) {
+            $error = 'Email não encontrado. Verifique o email ou faça seu cadastro.';
+        } elseif (password_verify($password, $user['senha'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['nome'];
             $_SESSION['user_email'] = $user['email'];
             $_SESSION['user_slug'] = $user['slug'];
             redirect('dashboard.php');
         } else {
-            $error = 'Email ou senha incorretos.';
+            $error = 'Senha incorreta. Verifique a senha ou use "Esqueci minha senha".';
         }
     }
 }

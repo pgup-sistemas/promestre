@@ -5,6 +5,8 @@ if (!isLoggedIn()) {
     redirect('index.php');
 }
 
+requireActiveSystemSubscription();
+
 $professor_id = $_SESSION['user_id'];
 $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
 

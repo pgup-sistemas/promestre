@@ -9,7 +9,12 @@ define('DB_PASS', '');
 define('SITE_NAME', 'Promestre');
 define('SITE_URL', 'http://localhost/promestre');
 
-if (file_exists(__DIR__ . '/.env.php')) {
+if (file_exists(__DIR__ . '/env_loader.php')) {
+    require_once __DIR__ . '/env_loader.php';
+}
+
+// Fallback legado: use apenas se não houver arquivo .env na raiz do projeto
+if (!file_exists(__DIR__ . '/../.env') && file_exists(__DIR__ . '/.env.php')) {
     require __DIR__ . '/.env.php';
 }
 if (defined('SMTP_HOST')) {
@@ -48,6 +53,62 @@ try {
 
 function isLoggedIn() {
     return isset($_SESSION['user_id']);
+}
+
+function isSystemSubscriptionActive($professor_id = null) {
+    global $pdo;
+
+    if ($professor_id === null && isset($_SESSION['user_id'])) {
+        $professor_id = $_SESSION['user_id'];
+    }
+
+    if (!$professor_id) {
+        return false;
+    }
+
+    try {
+        $stmt = $pdo->prepare("SELECT status, paid_until, cancel_at, canceled_at FROM assinaturas WHERE professor_id = ? AND tipo = 'sistema' ORDER BY id DESC LIMIT 1");
+        $stmt->execute([$professor_id]);
+        $row = $stmt->fetch();
+        if (!$row) {
+            return false;
+        }
+
+        if (!empty($row['canceled_at'])) {
+            return false;
+        }
+
+        $hoje = new DateTime('today');
+
+        if (!empty($row['cancel_at'])) {
+            $cancelAt = DateTime::createFromFormat('Y-m-d', (string)$row['cancel_at']);
+            if ($cancelAt && $hoje > $cancelAt) {
+                return false;
+            }
+        }
+
+        if (!empty($row['paid_until'])) {
+            $paidUntil = DateTime::createFromFormat('Y-m-d', (string)$row['paid_until']);
+            if ($paidUntil && $hoje > $paidUntil) {
+                return false;
+            }
+        }
+
+        $status = strtolower((string)$row['status']);
+        return in_array($status, ['active', 'paid', 'settled'], true);
+    } catch (Throwable $e) {
+        return false;
+    }
+}
+
+function requireActiveSystemSubscription() {
+    if (!isLoggedIn()) {
+        redirect('index.php');
+    }
+
+    if (!isSystemSubscriptionActive($_SESSION['user_id'])) {
+        redirect('acesso_restrito.php');
+    }
 }
 
 function redirect($url) {

@@ -6,6 +6,8 @@ if (!isLoggedIn()) {
     redirect('index.php');
 }
 
+requireActiveSystemSubscription();
+
 $professor_id = $_SESSION['user_id'];
 $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
@@ -15,7 +17,7 @@ if (!$id) {
 
 // Buscar dados da mensalidade e do professor
 $stmt = $pdo->prepare("
-    SELECT m.*, p.client_id_efi, p.client_secret_efi, p.certificado_efi, p.chave_pix, a.nome as aluno_nome, a.cpf as aluno_cpf 
+    SELECT m.*, p.client_id_efi, p.client_secret_efi, p.certificado_efi, p.chave_pix, p.ambiente_efi, a.nome as aluno_nome, a.cpf as aluno_cpf 
     FROM mensalidades m
     JOIN professores p ON m.professor_id = p.id
     JOIN alunos a ON m.aluno_id = a.id
@@ -37,7 +39,10 @@ if (empty($dados['client_id_efi']) || empty($dados['client_secret_efi']) || empt
     $error = 'Para gerar PIX, você precisa configurar suas credenciais da EfiBank no seu <a href="perfil.php">Perfil</a>.';
 } else {
     try {
-        $efi = new EfiPay($dados['client_id_efi'], $dados['client_secret_efi'], $dados['certificado_efi']);
+        $env = !empty($dados['ambiente_efi']) ? $dados['ambiente_efi'] : (defined('EFI_ENV') ? EFI_ENV : 'production');
+        $sandbox = (strtolower((string)$env) === 'sandbox');
+
+        $efi = new EfiPay($dados['client_id_efi'], $dados['client_secret_efi'], $dados['certificado_efi'], $sandbox);
 
         // Se já tem txid, busca o QR Code
         if (!empty($dados['txid_efi'])) {

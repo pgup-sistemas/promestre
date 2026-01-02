@@ -4,21 +4,39 @@ class EfiPay {
     private $client_id;
     private $client_secret;
     private $certificate;
+    private $certificateType;
+    private $certificatePassword;
     private $baseUrl;
     private $token;
 
     // Ambiente de produção por padrão. Para sandbox, mude para true.
     private $sandbox = true; 
 
-    public function __construct($client_id, $client_secret, $certificate, $sandbox = true) {
+    public function __construct($client_id, $client_secret, $certificate, $sandbox = true, $certificatePassword = '') {
         $this->client_id = $client_id;
         $this->client_secret = $client_secret;
         $this->certificate = $certificate;
         $this->sandbox = $sandbox;
+        $this->certificatePassword = $certificatePassword;
+
+        $ext = strtolower(pathinfo($this->certificate, PATHINFO_EXTENSION));
+        $this->certificateType = ($ext === 'p12') ? 'P12' : 'PEM';
         
         $this->baseUrl = $this->sandbox 
             ? 'https://pix-h.api.efipay.com.br' 
             : 'https://pix.api.efipay.com.br';
+    }
+
+    private function applyCertificateCurlOptions(array &$config) {
+        $config[CURLOPT_SSLCERT] = $this->certificate;
+
+        if (!empty($this->certificateType)) {
+            $config[CURLOPT_SSLCERTTYPE] = $this->certificateType;
+        }
+
+        if (!empty($this->certificatePassword)) {
+            $config[CURLOPT_SSLCERTPASSWD] = $this->certificatePassword;
+        }
     }
 
     private function getBasicAuth() {
@@ -40,12 +58,13 @@ class EfiPay {
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => '{"grant_type": "client_credentials"}',
-            CURLOPT_SSLCERT => $this->certificate,
             CURLOPT_HTTPHEADER => [
                 'Authorization: Basic ' . $this->getBasicAuth(),
                 'Content-Type: application/json'
             ],
         ];
+
+        $this->applyCertificateCurlOptions($config);
 
         curl_setopt_array($curl, $config);
         
@@ -102,12 +121,13 @@ class EfiPay {
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'PUT',
             CURLOPT_POSTFIELDS => json_encode($body),
-            CURLOPT_SSLCERT => $this->certificate,
             CURLOPT_HTTPHEADER => [
                 'Authorization: Bearer ' . $this->token,
                 'Content-Type: application/json'
             ],
         ];
+
+        $this->applyCertificateCurlOptions($config);
 
         curl_setopt_array($curl, $config);
         
@@ -141,12 +161,13 @@ class EfiPay {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_SSLCERT => $this->certificate,
             CURLOPT_HTTPHEADER => [
                 'Authorization: Bearer ' . $this->token,
                 'Content-Type: application/json'
             ],
         ];
+
+        $this->applyCertificateCurlOptions($config);
 
         curl_setopt_array($curl, $config);
         
@@ -183,12 +204,13 @@ class EfiPay {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_SSLCERT => $this->certificate,
             CURLOPT_HTTPHEADER => [
                 'Authorization: Bearer ' . $this->token,
                 'Content-Type: application/json'
             ],
         ];
+
+        $this->applyCertificateCurlOptions($config);
 
         curl_setopt_array($curl, $config);
         
@@ -248,12 +270,13 @@ class EfiPay {
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => json_encode($body),
-            CURLOPT_SSLCERT => $this->certificate,
             CURLOPT_HTTPHEADER => [
                 'Authorization: Bearer ' . $this->token,
                 'Content-Type: application/json'
             ],
         ];
+
+        $this->applyCertificateCurlOptions($config);
 
         curl_setopt_array($curl, $config);
         
@@ -290,12 +313,13 @@ class EfiPay {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_SSLCERT => $this->certificate,
             CURLOPT_HTTPHEADER => [
                 'Authorization: Bearer ' . $this->token,
                 'Content-Type: application/json'
             ],
         ];
+
+        $this->applyCertificateCurlOptions($config);
 
         curl_setopt_array($curl, $config);
         
@@ -332,12 +356,13 @@ class EfiPay {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'DELETE',
-            CURLOPT_SSLCERT => $this->certificate,
             CURLOPT_HTTPHEADER => [
                 'Authorization: Bearer ' . $this->token,
                 'Content-Type: application/json'
             ],
         ];
+
+        $this->applyCertificateCurlOptions($config);
 
         curl_setopt_array($curl, $config);
         

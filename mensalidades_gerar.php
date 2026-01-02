@@ -5,6 +5,8 @@ if (!isLoggedIn()) {
     redirect('index.php');
 }
 
+requireActiveSystemSubscription();
+
 $professor_id = $_SESSION['user_id'];
 $page_title = 'Gerar Cobranças';
 $error = '';

@@ -30,11 +30,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (in_array($ext, ['p12', 'pem'])) {
             $new_name = 'cert_' . $professor_id . '_' . time() . '.' . $ext;
             $upload_dir = __DIR__ . '/includes/certs/';
-            
-            if (move_uploaded_file($_FILES['certificado_efi']['tmp_name'], $upload_dir . $new_name)) {
+
+            if (!is_dir($upload_dir)) {
+                if (!mkdir($upload_dir, 0755, true) && !is_dir($upload_dir)) {
+                    $error = "Erro ao salvar certificado: não foi possível criar o diretório de certificados.";
+                }
+            }
+
+            if (!$error && move_uploaded_file($_FILES['certificado_efi']['tmp_name'], $upload_dir . $new_name)) {
                 $certificado_path = $upload_dir . $new_name;
             } else {
-                $error = "Erro ao salvar certificado.";
+                if (!$error) {
+                    $error = "Erro ao salvar certificado.";
+                }
             }
         } else {
             $error = "Formato inválido. Use .p12 ou .pem";
@@ -84,8 +92,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require_once 'includes/header.php';
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1><i class="fas fa-user-cog me-2"></i> Meu Perfil</h1>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+    <h1 class="h4 mb-0"><i class="fas fa-user-cog me-2"></i> Meu Perfil</h1>
 </div>
 
 <?php if ($error): ?>
@@ -104,7 +112,7 @@ require_once 'includes/header.php';
             </div>
             <div class="card-body p-4">
                 <form method="POST" action="" enctype="multipart/form-data">
-                    <h5 class="mb-3 text-primary">Dados Pessoais</h5>
+                    <h6 class="mb-3 text-primary">Dados Pessoais</h6>
                     <div class="row g-3 mb-4">
                         <div class="col-md-12">
                             <label for="nome" class="form-label">Nome Completo</label>
@@ -120,7 +128,7 @@ require_once 'includes/header.php';
                         </div>
                     </div>
 
-                    <h5 class="mb-3 text-primary">Dados de Recebimento</h5>
+                    <h6 class="mb-3 text-primary">Dados de Recebimento</h6>
                     <div class="row g-3 mb-4">
                         <div class="col-md-12">
                             <label for="chave_pix" class="form-label">Chave PIX Padrão</label>
@@ -129,7 +137,7 @@ require_once 'includes/header.php';
                         </div>
                     </div>
                     
-                    <h5 class="mb-3 text-primary">Links Públicos</h5>
+                    <h6 class="mb-3 text-primary">Links Públicos</h6>
                     <div class="row g-3 mb-4">
                         <div class="col-md-12">
                             <label class="form-label">Link para Agendamento (Aula Experimental)</label>
@@ -149,7 +157,7 @@ require_once 'includes/header.php';
                         </div>
                     </div>
 
-                    <h5 class="mb-3 text-primary">Integração EfiBank (Opcional)</h5>
+                    <h6 class="mb-3 text-primary">Integração EfiBank (Opcional)</h6>
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label for="client_id_efi" class="form-label">Client ID (Prod)</label>
@@ -168,7 +176,7 @@ require_once 'includes/header.php';
                         </div>
                     </div>
 
-                    <h5 class="mb-3 text-primary">Alterar Senha <small class="text-muted fw-normal">(Deixe em branco para não alterar)</small></h5>
+                    <h6 class="mb-3 text-primary">Alterar Senha <small class="text-muted fw-normal">(Deixe em branco para não alterar)</small></h6>
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label for="nova_senha" class="form-label">Nova Senha</label>

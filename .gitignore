@@ -1,0 +1,31 @@
+# Environment and secrets
+.env
+*.p12
+*.pem
+*.key
+*.crt
+
+# Logs
+email_log.txt
+*.log
+
+# IDE and temp files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# PHP
+vendor/
+composer.lock
+
+# XAMPP/backup folders
+backup_mysql_data_*/
+xampp_backup*/
+
+# OS generated files
+*.tmp
+*.temp

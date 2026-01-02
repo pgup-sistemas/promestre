@@ -41,9 +41,11 @@ $alunos = $stmt->fetchAll();
 require_once 'includes/header.php';
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1><i class="fas fa-users me-2"></i> Meus Alunos</h1>
-    <a href="alunos_cadastro.php" class="btn btn-primary"><i class="fas fa-plus me-2"></i> Novo Aluno</a>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+    <h1 class="h4 mb-0"><i class="fas fa-users me-2"></i> Meus Alunos</h1>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="alunos_cadastro.php" class="btn btn-primary btn-sm"><i class="fas fa-plus me-1"></i> Novo Aluno</a>
+    </div>
 </div>
 
 <?php
@@ -65,19 +67,19 @@ $pre_matriculas_count = $stmt_pre->fetchColumn();
 
 <div class="card mb-4">
     <div class="card-body">
-        <form method="GET" class="row g-3">
-            <div class="col-md-6">
+        <form method="GET" class="row g-2 align-items-end">
+            <div class="col-12 col-md-6">
                 <input type="text" class="form-control" name="busca" placeholder="Buscar por nome, email ou telefone..." value="<?php echo $busca; ?>">
             </div>
-            <div class="col-md-4">
+            <div class="col-12 col-md-4">
                 <select class="form-select" name="status">
                     <option value="todos" <?php echo $status == 'todos' ? 'selected' : ''; ?>>Todos os Status</option>
                     <option value="ativo" <?php echo $status == 'ativo' ? 'selected' : ''; ?>>Ativos</option>
                     <option value="inativo" <?php echo $status == 'inativo' ? 'selected' : ''; ?>>Inativos</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-secondary w-100">Filtrar</button>
+            <div class="col-12 col-md-2">
+                <button type="submit" class="btn btn-secondary btn-sm w-100">Filtrar</button>
             </div>
         </form>
     </div>
@@ -86,12 +88,12 @@ $pre_matriculas_count = $stmt_pre->fetchColumn();
 <div class="card shadow-sm">
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover table-sm align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
                         <th class="ps-4">Nome</th>
-                        <th>Contato</th>
-                        <th>Tipo de Aula</th>
+                        <th class="d-none d-md-table-cell">Contato</th>
+                        <th class="d-none d-lg-table-cell">Tipo de Aula</th>
                         <th>Status</th>
                         <th class="text-end pe-4">Ações</th>
                     </tr>
@@ -110,14 +112,24 @@ $pre_matriculas_count = $stmt_pre->fetchColumn();
                                     <?php if ($aluno['email']): ?>
                                         <div class="small text-muted"><?php echo htmlspecialchars($aluno['email']); ?></div>
                                     <?php endif; ?>
+                                    <?php if (!empty($aluno['whatsapp'])): ?>
+                                        <div class="small text-muted d-md-none"><i class="fab fa-whatsapp text-success me-1"></i><?php echo htmlspecialchars($aluno['whatsapp']); ?></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($aluno['tipo_aula_nome'])): ?>
+                                        <div class="d-lg-none mt-1">
+                                            <span class="badge" style="background-color: <?php echo $aluno['tipo_aula_cor']; ?>">
+                                                <?php echo htmlspecialchars($aluno['tipo_aula_nome']); ?>
+                                            </span>
+                                        </div>
+                                    <?php endif; ?>
                                 </td>
-                                <td>
+                                <td class="d-none d-md-table-cell">
                                     <div><i class="fab fa-whatsapp text-success me-1"></i> <?php echo htmlspecialchars($aluno['whatsapp']); ?></div>
                                     <?php if ($aluno['telefone'] && $aluno['telefone'] != $aluno['whatsapp']): ?>
                                         <div class="small text-muted"><?php echo htmlspecialchars($aluno['telefone']); ?></div>
                                     <?php endif; ?>
                                 </td>
-                                <td>
+                                <td class="d-none d-lg-table-cell">
                                     <?php if ($aluno['tipo_aula_nome']): ?>
                                         <span class="badge" style="background-color: <?php echo $aluno['tipo_aula_cor']; ?>">
                                             <?php echo htmlspecialchars($aluno['tipo_aula_nome']); ?>

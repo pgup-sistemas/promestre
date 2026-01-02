@@ -42,28 +42,106 @@ $whatsapp_num = preg_replace('/[^0-9]/', '', $aluno['whatsapp']);
 if (strlen($whatsapp_num) <= 11) {
     $whatsapp_num = '55' . $whatsapp_num;
 }
+
+// Formatar telefone
+$telefone_num = preg_replace('/[^0-9]/', '', (string)($aluno['telefone'] ?? ''));
+if (strlen($telefone_num) <= 11 && $telefone_num !== '') {
+    $telefone_num = '55' . $telefone_num;
+}
+
+// Verificar se aluno é menor de idade
+$aluno_menor = false;
+if (!empty($aluno['data_nascimento'])) {
+    try {
+        $dn = new DateTime($aluno['data_nascimento']);
+        $hoje = new DateTime('today');
+        $aluno_menor = ($dn->diff($hoje)->y < 18);
+    } catch (Exception $e) {
+        $aluno_menor = false;
+    }
+}
+
+// Formatar contatos do responsável
+$resp_whatsapp_num = preg_replace('/[^0-9]/', '', (string)($aluno['responsavel_whatsapp'] ?? ''));
+if (strlen($resp_whatsapp_num) <= 11 && $resp_whatsapp_num !== '') {
+    $resp_whatsapp_num = '55' . $resp_whatsapp_num;
+}
+$resp_telefone_num = preg_replace('/[^0-9]/', '', (string)($aluno['responsavel_telefone'] ?? ''));
+if (strlen($resp_telefone_num) <= 11 && $resp_telefone_num !== '') {
+    $resp_telefone_num = '55' . $resp_telefone_num;
+}
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1><i class="fas fa-user me-2"></i> <?php echo htmlspecialchars($aluno['nome']); ?></h1>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
     <div>
-        <a href="https://wa.me/<?php echo $whatsapp_num; ?>" target="_blank" class="btn btn-success me-2">
-            <i class="fab fa-whatsapp me-2"></i> WhatsApp
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <h1 class="h4 mb-0"><i class="fas fa-user me-2"></i> <?php echo htmlspecialchars($aluno['nome']); ?></h1>
+            <?php if ($aluno_menor): ?>
+                <span class="badge bg-warning text-dark">Menor de idade</span>
+            <?php endif; ?>
+            <?php if (!empty($aluno['possui_responsavel'])): ?>
+                <span class="badge bg-info text-dark">Com responsável</span>
+            <?php endif; ?>
+        </div>
+        <?php if (!empty($aluno['tipo_aula_nome'])): ?>
+            <div class="mt-1">
+                <span class="badge" style="background-color: <?php echo $aluno['tipo_aula_cor']; ?>">
+                    <?php echo htmlspecialchars($aluno['tipo_aula_nome']); ?>
+                </span>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <a href="https://wa.me/<?php echo $whatsapp_num; ?>" target="_blank" class="btn btn-success btn-sm">
+            <i class="fab fa-whatsapp me-1"></i> WhatsApp
         </a>
-        <a href="alunos_cadastro.php?id=<?php echo $aluno['id']; ?>" class="btn btn-primary me-2">
-            <i class="fas fa-edit me-2"></i> Editar
+        <a href="contrato_aluno.php?id=<?php echo $aluno['id']; ?>" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-file-signature me-1"></i> Contrato
         </a>
-        <a href="alunos.php" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-2"></i> Voltar
+        <a href="aluno_assinatura.php?id=<?php echo $aluno['id']; ?>" class="btn btn-outline-dark btn-sm">
+            <i class="fas fa-repeat me-1"></i> Assinatura
+        </a>
+        <a href="alunos_cadastro.php?id=<?php echo $aluno['id']; ?>" class="btn btn-primary btn-sm">
+            <i class="fas fa-edit me-1"></i> Editar
+        </a>
+        <a href="alunos.php" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Voltar
         </a>
     </div>
 </div>
 
-<div class="row">
-    <!-- Card de Informações -->
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-light">
+<?php $tem_responsavel = (!empty($aluno['possui_responsavel']) || !empty($aluno['responsavel_nome'])); ?>
+
+<ul class="nav nav-tabs" id="alunoTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tab-resumo" data-bs-toggle="tab" data-bs-target="#pane-resumo" type="button" role="tab" aria-controls="pane-resumo" aria-selected="true">
+            Resumo
+        </button>
+    </li>
+    <?php if ($tem_responsavel): ?>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-responsavel" data-bs-toggle="tab" data-bs-target="#pane-responsavel" type="button" role="tab" aria-controls="pane-responsavel" aria-selected="false">
+                Responsável
+            </button>
+        </li>
+    <?php endif; ?>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-financeiro" data-bs-toggle="tab" data-bs-target="#pane-financeiro" type="button" role="tab" aria-controls="pane-financeiro" aria-selected="false">
+            Financeiro
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-aulas" data-bs-toggle="tab" data-bs-target="#pane-aulas" type="button" role="tab" aria-controls="pane-aulas" aria-selected="false">
+            Aulas
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content border border-top-0 rounded-bottom p-3" id="alunoTabsContent">
+    <div class="tab-pane fade show active" id="pane-resumo" role="tabpanel" aria-labelledby="tab-resumo" tabindex="0">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light py-2">
                 <h5 class="mb-0">Dados do Aluno</h5>
             </div>
             <div class="card-body">
@@ -88,15 +166,33 @@ if (strlen($whatsapp_num) <= 11) {
                     </li>
                     <li class="list-group-item px-0">
                         <small class="text-muted d-block">Email</small>
-                        <?php echo $aluno['email'] ? htmlspecialchars($aluno['email']) : '-'; ?>
+                        <?php if (!empty($aluno['email'])): ?>
+                            <a href="mailto:<?php echo htmlspecialchars($aluno['email']); ?>" class="text-decoration-none">
+                                <?php echo htmlspecialchars($aluno['email']); ?>
+                            </a>
+                        <?php else: ?>
+                            -
+                        <?php endif; ?>
                     </li>
                     <li class="list-group-item px-0">
                         <small class="text-muted d-block">Telefone</small>
-                        <?php echo htmlspecialchars($aluno['telefone']); ?>
+                        <?php if (!empty($aluno['telefone'])): ?>
+                            <a href="tel:<?php echo htmlspecialchars($telefone_num !== '' ? ('+' . $telefone_num) : ''); ?>" class="text-decoration-none">
+                                <?php echo htmlspecialchars($aluno['telefone']); ?>
+                            </a>
+                        <?php else: ?>
+                            -
+                        <?php endif; ?>
                     </li>
                     <li class="list-group-item px-0">
                         <small class="text-muted d-block">WhatsApp</small>
-                        <?php echo htmlspecialchars($aluno['whatsapp']); ?>
+                        <?php if (!empty($aluno['whatsapp'])): ?>
+                            <a href="https://wa.me/<?php echo $whatsapp_num; ?>" target="_blank" class="text-decoration-none">
+                                <?php echo htmlspecialchars($aluno['whatsapp']); ?>
+                            </a>
+                        <?php else: ?>
+                            -
+                        <?php endif; ?>
                     </li>
                     <li class="list-group-item px-0">
                         <small class="text-muted d-block">Data de Nascimento</small>
@@ -117,10 +213,56 @@ if (strlen($whatsapp_num) <= 11) {
         </div>
     </div>
 
-    <!-- Histórico Financeiro -->
-    <div class="col-md-8 mb-4">
-        <div class="card shadow-sm h-100 mb-4">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+    <?php if ($tem_responsavel): ?>
+        <div class="tab-pane fade" id="pane-responsavel" role="tabpanel" aria-labelledby="tab-responsavel" tabindex="0">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Responsável</h5>
+                    <?php if ($aluno_menor): ?>
+                        <span class="badge bg-warning text-dark">Obrigatório</span>
+                    <?php endif; ?>
+                </div>
+                <div class="card-body">
+                    <div class="fw-bold"><?php echo htmlspecialchars((string)($aluno['responsavel_nome'] ?? '')); ?></div>
+                    <?php if (!empty($aluno['responsavel_parentesco'])): ?>
+                        <div class="text-muted small"><?php echo htmlspecialchars((string)$aluno['responsavel_parentesco']); ?></div>
+                    <?php endif; ?>
+
+                    <div class="mt-3">
+                        <div class="small text-muted">Contato</div>
+                        <?php if (!empty($aluno['responsavel_whatsapp'])): ?>
+                            <div>
+                                <a href="https://wa.me/<?php echo $resp_whatsapp_num; ?>" target="_blank" class="text-decoration-none">
+                                    <i class="fab fa-whatsapp me-1"></i><?php echo htmlspecialchars((string)$aluno['responsavel_whatsapp']); ?>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (!empty($aluno['responsavel_telefone'])): ?>
+                            <div>
+                                <a href="tel:<?php echo htmlspecialchars($resp_telefone_num !== '' ? ('+' . $resp_telefone_num) : ''); ?>" class="text-decoration-none">
+                                    <i class="fas fa-phone me-1"></i><?php echo htmlspecialchars((string)$aluno['responsavel_telefone']); ?>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (!empty($aluno['responsavel_email'])): ?>
+                            <div>
+                                <a href="mailto:<?php echo htmlspecialchars((string)$aluno['responsavel_email']); ?>" class="text-decoration-none">
+                                    <i class="fas fa-envelope me-1"></i><?php echo htmlspecialchars((string)$aluno['responsavel_email']); ?>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (!empty($aluno['responsavel_cpf'])): ?>
+                            <div class="text-muted small mt-2">CPF: <?php echo htmlspecialchars((string)$aluno['responsavel_cpf']); ?></div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <div class="tab-pane fade" id="pane-financeiro" role="tabpanel" aria-labelledby="tab-financeiro" tabindex="0">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Histórico Financeiro</h5>
                 <a href="mensalidades_gerar.php?aluno_id=<?php echo $aluno['id']; ?>" class="btn btn-sm btn-outline-primary">
                     <i class="fas fa-plus me-1"></i> Nova Cobrança
@@ -128,13 +270,13 @@ if (strlen($whatsapp_num) <= 11) {
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover table-sm mb-0">
                         <thead>
                             <tr>
                                 <th>Vencimento</th>
                                 <th>Valor</th>
                                 <th>Status</th>
-                                <th>Pagamento</th>
+                                <th class="d-none d-md-table-cell">Pagamento</th>
                                 <th class="text-end">Ações</th>
                             </tr>
                         </thead>
@@ -157,7 +299,7 @@ if (strlen($whatsapp_num) <= 11) {
                                                 <span class="badge bg-secondary"><?php echo ucfirst($mensalidade['status']); ?></span>
                                             <?php endif; ?>
                                         </td>
-                                        <td>
+                                        <td class="d-none d-md-table-cell">
                                             <?php echo $mensalidade['data_pagamento'] ? date('d/m/Y', strtotime($mensalidade['data_pagamento'])) : '-'; ?>
                                         </td>
                                         <td class="text-end">
@@ -179,19 +321,20 @@ if (strlen($whatsapp_num) <= 11) {
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Histórico de Aulas -->
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-light">
+    <div class="tab-pane fade" id="pane-aulas" role="tabpanel" aria-labelledby="tab-aulas" tabindex="0">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light py-2">
                 <h5 class="mb-0">Histórico de Aulas</h5>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover table-sm mb-0">
                         <thead>
                             <tr>
                                 <th>Data</th>
-                                <th>Horário</th>
+                                <th class="d-none d-md-table-cell">Horário</th>
                                 <th>Título</th>
                                 <th>Status</th>
                             </tr>
@@ -201,7 +344,7 @@ if (strlen($whatsapp_num) <= 11) {
                                 <?php foreach ($aulas as $aula): ?>
                                     <tr>
                                         <td><?php echo date('d/m/Y', strtotime($aula['data_inicio'])); ?></td>
-                                        <td><?php echo date('H:i', strtotime($aula['data_inicio'])); ?> - <?php echo date('H:i', strtotime($aula['data_fim'])); ?></td>
+                                        <td class="d-none d-md-table-cell"><?php echo date('H:i', strtotime($aula['data_inicio'])); ?> - <?php echo date('H:i', strtotime($aula['data_fim'])); ?></td>
                                         <td><?php echo htmlspecialchars($aula['titulo']); ?></td>
                                         <td>
                                             <?php if ($aula['status'] == 'realizado'): ?>

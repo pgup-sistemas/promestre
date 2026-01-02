@@ -67,14 +67,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require_once 'includes/header.php';
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1><i class="fas fa-file-contract me-2"></i> Configurar Modelo de Contrato</h1>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+    <h1 class="h4 mb-0"><i class="fas fa-file-contract me-2"></i> Configurar Modelo de Contrato</h1>
 </div>
 
-<div class="row">
-    <div class="col-lg-8">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+
+<ul class="nav nav-tabs" id="contratoTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tab-modelo" data-bs-toggle="tab" data-bs-target="#pane-modelo" type="button" role="tab" aria-controls="pane-modelo" aria-selected="true">
+            Modelo
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-variaveis" data-bs-toggle="tab" data-bs-target="#pane-variaveis" type="button" role="tab" aria-controls="pane-variaveis" aria-selected="false">
+            Variáveis
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-ajuda" data-bs-toggle="tab" data-bs-target="#pane-ajuda" type="button" role="tab" aria-controls="pane-ajuda" aria-selected="false">
+            Como funciona
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content border border-top-0 rounded-bottom p-3" id="contratoTabsContent">
+    <div class="tab-pane fade show active" id="pane-modelo" role="tabpanel" aria-labelledby="tab-modelo" tabindex="0">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light py-2">
                 <h6 class="m-0 font-weight-bold text-primary">Modelo de Contrato</h6>
             </div>
             <div class="card-body">
@@ -83,14 +102,7 @@ require_once 'includes/header.php';
                         <label for="conteudo" class="form-label">Edite o texto do contrato abaixo:</label>
                         <textarea class="form-control" id="conteudo" name="conteudo" rows="20" style="font-family: monospace;"><?php echo htmlspecialchars($conteudo); ?></textarea>
                         <div class="form-text mt-2">
-                            <strong>Variáveis disponíveis (serão substituídas automaticamente):</strong><br>
-                            <code>{ALUNO_NOME}</code> - Nome do aluno<br>
-                            <code>{ALUNO_CPF}</code> - CPF do aluno<br>
-                            <code>{ALUNO_ENDERECO}</code> - Endereço do aluno<br>
-                            <code>{TIPO_AULA}</code> - Nome do tipo de aula contratado<br>
-                            <code>{VALOR_MENSALIDADE}</code> - Valor padrão da aula<br>
-                            <code>{PROFESSOR_NOME}</code> - Seu nome<br>
-                            <code>{CIDADE_DATA}</code> - Data atual por extenso
+                            Dica: veja a aba <strong>Variáveis</strong> para copiar e colar os placeholders.
                         </div>
                     </div>
                     <div class="d-grid gap-2">
@@ -100,10 +112,37 @@ require_once 'includes/header.php';
             </div>
         </div>
     </div>
-    
-    <div class="col-lg-4">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+
+    <div class="tab-pane fade" id="pane-variaveis" role="tabpanel" aria-labelledby="tab-variaveis" tabindex="0">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light py-2">
+                <h6 class="m-0 font-weight-bold text-primary">Variáveis disponíveis</h6>
+            </div>
+            <div class="card-body">
+                <div class="small">
+                    <strong>Serão substituídas automaticamente:</strong><br>
+                    <code>{ALUNO_NOME}</code> - Nome do aluno<br>
+                    <code>{ALUNO_CPF}</code> - CPF do aluno<br>
+                    <code>{ALUNO_ENDERECO}</code> - Endereço do aluno<br>
+                    <code>{CONTRATANTE_NOME}</code> - Nome do contratante (aluno ou responsável)<br>
+                    <code>{CONTRATANTE_CPF}</code> - CPF do contratante (aluno ou responsável)<br>
+                    <code>{CONTRATANTE_ENDERECO}</code> - Endereço do contratante<br>
+                    <code>{CONTRATANTE_TELEFONE}</code> - Telefone do contratante<br>
+                    <code>{CONTRATANTE_WHATSAPP}</code> - WhatsApp do contratante<br>
+                    <code>{CONTRATANTE_PARENTESCO}</code> - Parentesco do contratante com o aluno (quando houver responsável)<br>
+                    <code>{ALUNO_MENOR_DE_IDADE}</code> - SIM/NÃO, conforme data de nascimento<br>
+                    <code>{TIPO_AULA}</code> - Nome do tipo de aula contratado<br>
+                    <code>{VALOR_MENSALIDADE}</code> - Valor padrão da aula<br>
+                    <code>{PROFESSOR_NOME}</code> - Seu nome<br>
+                    <code>{CIDADE_DATA}</code> - Data atual por extenso
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="pane-ajuda" role="tabpanel" aria-labelledby="tab-ajuda" tabindex="0">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light py-2">
                 <h6 class="m-0 font-weight-bold text-primary">Como funciona</h6>
             </div>
             <div class="card-body">

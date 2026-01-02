@@ -22,6 +22,21 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+$headers = function_exists('getallheaders') ? getallheaders() : [];
+$webhookSecretHeader = isset($headers['X-Webhook-Secret']) ? $headers['X-Webhook-Secret'] : (isset($headers['x-webhook-secret']) ? $headers['x-webhook-secret'] : null);
+
+$webhookToken = isset($_GET['token']) ? (string)$_GET['token'] : null;
+
+if (defined('EFI_WEBHOOK_SECRET') && EFI_WEBHOOK_SECRET) {
+    $headerOk = ($webhookSecretHeader && hash_equals((string)EFI_WEBHOOK_SECRET, (string)$webhookSecretHeader));
+    $tokenOk = ($webhookToken && hash_equals((string)EFI_WEBHOOK_SECRET, (string)$webhookToken));
+    if (!$headerOk && !$tokenOk) {
+        http_response_code(401);
+        echo json_encode(['erro' => 'Não autorizado']);
+        exit;
+    }
+}
+
 // Obter payload
 $payload = file_get_contents('php://input');
 $data = json_decode($payload, true);

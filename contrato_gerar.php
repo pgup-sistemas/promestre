@@ -58,11 +58,50 @@ $ano = date('Y');
 $data_extenso = "$dia de $mes de $ano";
 
 
+// Regra: usa responsável como CONTRATANTE quando aluno for menor de idade ou marcar "possui_responsavel"
+$aluno_menor = false;
+if (!empty($aluno['data_nascimento'])) {
+    try {
+        $dn = new DateTime($aluno['data_nascimento']);
+        $hoje = new DateTime('today');
+        $aluno_menor = ($dn->diff($hoje)->y < 18);
+    } catch (Exception $e) {
+        $aluno_menor = false;
+    }
+}
+
+$possui_responsavel = !empty($aluno['possui_responsavel']) && (int)$aluno['possui_responsavel'] === 1;
+$usar_responsavel_como_contratante = $aluno_menor || $possui_responsavel;
+
+$contratante_nome = $aluno['nome'];
+$contratante_cpf = $aluno['cpf'];
+$contratante_endereco = $aluno['endereco'];
+$contratante_telefone = $aluno['telefone'] ?? '';
+$contratante_whatsapp = $aluno['whatsapp'] ?? '';
+$contratante_parentesco = '';
+
+if ($usar_responsavel_como_contratante) {
+    $contratante_nome = $aluno['responsavel_nome'] ?? '';
+    $contratante_cpf = $aluno['responsavel_cpf'] ?? '';
+    $contratante_endereco = $aluno['endereco'];
+    $contratante_telefone = $aluno['responsavel_telefone'] ?? '';
+    $contratante_whatsapp = $aluno['responsavel_whatsapp'] ?? '';
+    $contratante_parentesco = $aluno['responsavel_parentesco'] ?? '';
+}
+
+
 // Substituições
 $substituicoes = [
     '{ALUNO_NOME}' => $aluno['nome'],
     '{ALUNO_CPF}' => $aluno['cpf'] ?: '__________________',
     '{ALUNO_ENDERECO}' => $aluno['endereco'] ?: '__________________________________________________',
+    '{CONTRATANTE_NOME}' => $contratante_nome ?: '__________________',
+    '{CONTRATANTE_CPF}' => $contratante_cpf ?: '__________________',
+    '{CONTRATANTE_ENDERECO}' => $contratante_endereco ?: '__________________________________________________',
+    '{CONTRATANTE_TELEFONE}' => $contratante_telefone ?: '__________________',
+    '{CONTRATANTE_WHATSAPP}' => $contratante_whatsapp ?: '__________________',
+    '{CONTRATANTE_PARENTESCO}' => $contratante_parentesco ?: '__________________',
+    '{ALUNO_MENOR_DE_IDADE}' => $aluno_menor ? 'SIM' : 'NÃO',
     '{TIPO_AULA}' => $aluno['tipo_aula_nome'] ?: '_____________',
     '{VALOR_MENSALIDADE}' => number_format($aluno['preco_padrao'] ?: 0, 2, ',', '.'),
     '{PROFESSOR_NOME}' => $professor['nome'],
@@ -73,8 +112,72 @@ foreach ($substituicoes as $chave => $valor) {
     $texto = str_replace($chave, $valor, $texto);
 }
 
-// Converter quebras de linha para <br>
-$texto_html = nl2br(htmlspecialchars($texto));
+$texto_norm = str_replace(["\r\n", "\r"], "\n", (string)$texto);
+$texto_norm = preg_replace("/\n{3,}/", "\n\n", $texto_norm);
+$assinaturas_html = '';
+$lines = explode("\n", $texto_norm);
+$idx_underscores = [];
+foreach ($lines as $i => $line) {
+    if (preg_match('/^_{10,}$/', trim($line))) {
+        $idx_underscores[] = $i;
+    }
+}
+
+if (count($idx_underscores) >= 2) {
+    $primeiro = $idx_underscores[0];
+    $blocos = [];
+    for ($b = 0; $b < count($idx_underscores); $b++) {
+        $start = $idx_underscores[$b];
+        $end = ($b + 1 < count($idx_underscores)) ? $idx_underscores[$b + 1] : count($lines);
+        $conteudo = [];
+        for ($j = $start + 1; $j < $end; $j++) {
+            $t = trim($lines[$j]);
+            if ($t === '') {
+                continue;
+            }
+            $conteudo[] = $t;
+        }
+        $nome = $conteudo[0] ?? '';
+        $rotulo = $conteudo[1] ?? '';
+        $blocos[] = ['nome' => $nome, 'rotulo' => $rotulo];
+    }
+
+    $blocos_esq = array_slice($blocos, 0, 2);
+    $blocos_dir = array_slice($blocos, 2);
+
+    $renderBloco = function (array $bloco): string {
+        $nome = htmlspecialchars((string)($bloco['nome'] ?? ''));
+        $rotulo = htmlspecialchars((string)($bloco['rotulo'] ?? ''));
+        return '<div class="assinatura">'
+            . '<div class="assinatura-linha"></div>'
+            . '<div class="assinatura-nome">' . $nome . '</div>'
+            . ($rotulo !== '' ? '<div class="assinatura-rotulo">' . $rotulo . '</div>' : '')
+            . '</div>';
+    };
+
+    $assinaturas_html = '<div class="assinaturas-grid">'
+        . '<div class="assinaturas-col">'
+        . implode('', array_map($renderBloco, $blocos_esq))
+        . '</div>'
+        . '<div class="assinaturas-col">'
+        . implode('', array_map($renderBloco, $blocos_dir))
+        . '</div>'
+        . '</div>';
+
+    $texto_norm = implode("\n", array_slice($lines, 0, $primeiro));
+    $texto_norm = rtrim($texto_norm) . "\n\n";
+}
+
+$partes = preg_split("/\n\n/", $texto_norm);
+$html_partes = [];
+foreach ($partes as $parte) {
+    $parte = trim($parte);
+    if ($parte === '') {
+        continue;
+    }
+    $html_partes[] = '<p>' . nl2br(htmlspecialchars($parte)) . '</p>';
+}
+$texto_html = implode("\n", $html_partes) . $assinaturas_html;
 
 ?>
 <!DOCTYPE html>
@@ -102,19 +205,43 @@ $texto_html = nl2br(htmlspecialchars($texto));
             margin-bottom: 2cm;
         }
         p {
-            margin-bottom: 1em;
+            margin: 0 0 0.35em 0;
             text-align: justify;
         }
         .assinaturas {
-            margin-top: 3cm;
+            margin-top: 1.2cm;
             display: flex;
             justify-content: space-between;
         }
         .assinatura {
             width: 45%;
             text-align: center;
+            padding-top: 6px;
+        }
+        .assinaturas-grid {
+            margin-top: 1.1cm;
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            page-break-inside: avoid;
+        }
+        .assinaturas-col {
+            width: 48%;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .assinatura-linha {
             border-top: 1px solid #000;
-            padding-top: 10px;
+            margin-bottom: 6px;
+        }
+        .assinatura-nome {
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .assinatura-rotulo {
+            font-size: 11px;
+            margin-top: 2px;
         }
         @media print {
             .no-print {
