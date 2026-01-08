@@ -22,6 +22,55 @@ require_once 'includes/header.php';
     </div>
 </div>
 
+<style>
+    /* Ajustes para deixar a agenda mais compacta */
+    .fc .fc-toolbar-title {
+        font-size: 1.25rem !important;
+    }
+    .fc .fc-button {
+        padding: 0.25rem 0.5rem !important;
+        font-size: 0.875rem !important;
+    }
+    .fc .fc-daygrid-day-frame {
+        min-height: 80px !important; /* Altura mínima menor para as células */
+    }
+    .fc .fc-event {
+        font-size: 0.75rem !important;
+        padding: 1px 2px !important;
+    }
+    .fc-theme-standard td, .fc-theme-standard th {
+        border-color: #e3e6f0;
+    }
+    /* Altura total do calendário */
+    #calendar {
+        /* max-height: 75vh; Removido para permitir que o card cresça junto com o calendário nas visualizações de dia/semana */
+    }
+    
+    /* Mobile CSS */
+    @media (max-width: 767.98px) {
+        .fc .fc-toolbar {
+            flex-direction: column;
+            gap: 10px;
+        }
+        .fc .fc-toolbar-title {
+            font-size: 1.1rem !important;
+        }
+        .fc .fc-button {
+            padding: 0.35rem 0.6rem !important; /* Touch friendly */
+            font-size: 0.8rem !important;
+        }
+        #calendar {
+            max-height: none; /* Deixa crescer no mobile */
+        }
+        .fc-list-event-title {
+            font-weight: 500;
+        }
+        .fc-list-day-text {
+            text-transform: capitalize;
+        }
+    }
+</style>
+
 <!-- Modal Detalhes do Evento -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
@@ -54,14 +103,18 @@ require_once 'includes/header.php';
                     </div>
                 </div>
 
-                <!-- Attendance Controls -->
-                <div id="attendanceControls" class="mt-3 d-none">
-                    <div class="fw-semibold mb-2">Controle de Presença</div>
-                    <div class="btn-group w-100" role="group">
-                        <button type="button" class="btn btn-success btn-sm" onclick="marcarPresenca('presente')">Presente</button>
-                        <button type="button" class="btn btn-warning btn-sm" onclick="marcarPresenca('ausente')">Ausente</button>
-                        <button type="button" class="btn btn-info btn-sm" onclick="marcarPresenca('justificada')">Justificada</button>
+                <!-- Attendance List Section -->
+                <div id="attendanceSection" class="mt-3">
+                    <div class="fw-semibold mb-2">Lista de Chamada</div>
+                    <div id="attendanceList" class="mb-2">
+                        <!-- Loading or list content will go here -->
+                        <div class="text-center text-muted py-2">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando lista...
+                        </div>
                     </div>
+                    <button id="btnSaveAttendance" class="btn btn-primary btn-sm w-100 d-none" onclick="salvarChamada()">
+                        <i class="fas fa-check me-1"></i> Salvar Chamada
+                    </button>
                 </div>
 
                 <div class="d-grid gap-2 mt-4">
@@ -91,20 +144,42 @@ require_once 'includes/header.php';
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
+    var isMobile = window.innerWidth < 768;
+    
     var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
+        initialView: isMobile ? 'listWeek' : 'dayGridMonth',
         locale: 'pt-br',
         headerToolbar: {
-            left: 'prev,next today',
+            left: isMobile ? 'prev,next' : 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+            right: isMobile ? 'listWeek,dayGridMonth' : 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
         },
+        height: 'auto',
+        contentHeight: 'auto',
+        aspectRatio: isMobile ? 0.8 : 1.35,
         buttonText: {
             today: 'Hoje',
             month: 'Mês',
             week: 'Semana',
             day: 'Dia',
             list: 'Lista'
+        },
+        windowResize: function(view) {
+            if (window.innerWidth < 768) {
+                calendar.changeView('listWeek');
+                calendar.setOption('headerToolbar', {
+                    left: 'prev,next',
+                    center: 'title',
+                    right: 'listWeek,dayGridMonth'
+                });
+            } else {
+                calendar.changeView('dayGridMonth');
+                calendar.setOption('headerToolbar', {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                });
+            }
         },
         events: function(fetchInfo, successCallback, failureCallback) {
             fetch('api_agenda.php', {
@@ -135,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var end = event.end ? event.end.toLocaleString('pt-BR', { timeStyle: 'short' }) : '';
             document.getElementById('eventTime').innerText = start + (end ? ' - ' + end : '');
             
-            document.getElementById('eventAluno').innerText = props.aluno_nome || 'N/A';
+            document.getElementById('eventAluno').innerText = props.turma_nome ? 'Turma: ' + props.turma_nome : (props.aluno_nome || 'N/A');
 
             var statusBadge = '';
             if(props.status === 'agendado') statusBadge = '<span class="badge bg-primary">Agendado</span>';
@@ -152,16 +227,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             document.getElementById('eventObs').innerText = props.observacoes || '-';
 
-            // Show attendance controls if event is in the past or can be marked
-            var now = new Date();
-            var eventEnd = event.end || event.start;
-            var attendanceControls = document.getElementById('attendanceControls');
-            if (eventEnd < now && props.status !== 'cancelado') {
-                attendanceControls.classList.remove('d-none');
-            } else {
-                attendanceControls.classList.add('d-none');
-            }
-            
             // WhatsApp Button
             var btnWa = document.getElementById('btnWhatsapp');
             if (props.whatsapp) {
@@ -178,10 +243,18 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('btnEdit').href = 'agenda_cadastro.php?id=' + event.id;
             document.getElementById('btnDelete').href = 'agenda_excluir.php?id=' + event.id;
 
-            // Store event data for attendance marking
             document.getElementById('btnEdit').onclick = function() {
                 window.location.href = 'agenda_cadastro.php?id=' + event.id;
             };
+
+            // Attendance List Loading
+            var attendanceSection = document.getElementById('attendanceSection');
+            if (props.status !== 'cancelado') {
+                attendanceSection.classList.remove('d-none');
+                loadAttendanceList(event.id);
+            } else {
+                attendanceSection.classList.add('d-none');
+            }
 
             // Show Modal
             var modal = new bootstrap.Modal(document.getElementById('eventModal'));
@@ -195,45 +268,105 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     calendar.render();
 
-    // Function to mark attendance
-    window.marcarPresenca = function(status) {
-        var eventId = window.currentEventId;
-        var modal = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
+    // Load Attendance List
+    window.loadAttendanceList = function(agendaId) {
+        var listContainer = document.getElementById('attendanceList');
+        var btnSave = document.getElementById('btnSaveAttendance');
+        
+        listContainer.innerHTML = '<div class="text-center text-muted py-2"><i class="fas fa-spinner fa-spin"></i> Carregando lista...</div>';
+        btnSave.classList.add('d-none');
 
-        if (confirm('Deseja marcar presença como ' + status + '?')) {
-            fetch('agenda_marcar_presenca.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'id=' + encodeURIComponent(eventId) + '&presenca=' + encodeURIComponent(status)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update the badge in modal
-                    var presencaBadge = '';
-                    if(status === 'presente') presencaBadge = '<span class="badge bg-success">Presente</span>';
-                    else if(status === 'ausente') presencaBadge = '<span class="badge bg-warning">Ausente</span>';
-                    else if(status === 'justificada') presencaBadge = '<span class="badge bg-info">Justificada</span>';
-                    document.getElementById('eventPresenca').innerHTML = presencaBadge;
-
-                    // Hide controls after marking
-                    document.getElementById('attendanceControls').classList.add('d-none');
-
-                    // Refresh calendar
-                    calendar.refetchEvents();
-
-                    alert('Presença marcada com sucesso!');
+        fetch('ajax_lista_chamada.php?agenda_id=' + agendaId)
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                var html = '<div class="list-group">';
+                if (data.alunos.length === 0) {
+                     html += '<div class="list-group-item text-center text-muted">Nenhum aluno vinculado.</div>';
                 } else {
-                    alert('Erro ao marcar presença: ' + data.error);
+                    data.alunos.forEach(aluno => {
+                        var p = aluno.status_presenca;
+                        var name = 'presenca_' + aluno.aluno_id;
+                        
+                        html += '<div class="list-group-item d-flex justify-content-between align-items-center p-2">';
+                        html += '<div>' + aluno.nome + '</div>';
+                        html += '<div class="btn-group btn-group-sm" role="group">';
+                        
+                        html += '<input type="radio" class="btn-check" name="'+name+'" id="'+name+'_p" value="presente" '+(p==='presente'?'checked':'')+'>';
+                        html += '<label class="btn btn-outline-success" for="'+name+'_p" title="Presente">P</label>';
+                        
+                        html += '<input type="radio" class="btn-check" name="'+name+'" id="'+name+'_a" value="ausente" '+(p==='ausente'?'checked':'')+'>';
+                        html += '<label class="btn btn-outline-danger" for="'+name+'_a" title="Ausente">A</label>';
+                        
+                        html += '<input type="radio" class="btn-check" name="'+name+'" id="'+name+'_j" value="justificada" '+(p==='justificada'?'checked':'')+'>';
+                        html += '<label class="btn btn-outline-info" for="'+name+'_j" title="Justificada">J</label>';
+                        
+                        html += '</div></div>';
+                    });
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Erro ao marcar presença');
+                html += '</div>';
+                listContainer.innerHTML = html;
+                btnSave.classList.remove('d-none');
+            } else {
+                listContainer.innerHTML = '<div class="alert alert-danger p-2">' + (data.error || 'Erro ao carregar') + '</div>';
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            listContainer.innerHTML = '<div class="alert alert-danger p-2">Erro de conexão</div>';
+        });
+    };
+
+    // Save Attendance
+    window.salvarChamada = function() {
+        var agendaId = window.currentEventId;
+        var inputs = document.querySelectorAll('#attendanceList input[type="radio"]:checked');
+        var presencas = [];
+        
+        inputs.forEach(input => {
+            var alunoId = input.name.split('_')[1];
+            presencas.push({
+                aluno_id: alunoId,
+                status: input.value
             });
+        });
+        
+        if(presencas.length === 0) {
+            alert('Nenhuma presença marcada.');
+            return;
         }
+
+        var btn = document.getElementById('btnSaveAttendance');
+        var originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+
+        fetch('ajax_lista_chamada.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                agenda_id: agendaId,
+                presencas: presencas
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                alert('Chamada salva com sucesso!');
+                calendar.refetchEvents();
+                // Close modal or reload list
+                loadAttendanceList(agendaId);
+            } else {
+                alert('Erro: ' + (data.error || 'Erro desconhecido'));
+            }
+        })
+        .catch(err => {
+            alert('Erro de conexão');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        });
     };
 });
 </script>

@@ -116,15 +116,15 @@ require_once 'includes/header.php';
                     <div class="row g-3 mb-4">
                         <div class="col-md-12">
                             <label for="nome" class="form-label">Nome Completo</label>
-                            <input type="text" class="form-control" id="nome" name="nome" value="<?php echo htmlspecialchars($professor['nome']); ?>" required>
+                            <input type="text" class="form-control" id="nome" name="nome" value="<?php echo htmlspecialchars($professor['nome'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-6">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($professor['email']); ?>" required>
+                            <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($professor['email'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-6">
                             <label for="telefone" class="form-label">Telefone (WhatsApp)</label>
-                            <input type="text" class="form-control" id="telefone" name="telefone" value="<?php echo htmlspecialchars($professor['telefone']); ?>">
+                            <input type="text" class="form-control" id="telefone" name="telefone" value="<?php echo htmlspecialchars($professor['telefone'] ?? ''); ?>">
                         </div>
                     </div>
 
@@ -132,7 +132,7 @@ require_once 'includes/header.php';
                     <div class="row g-3 mb-4">
                         <div class="col-md-12">
                             <label for="chave_pix" class="form-label">Chave PIX Padrão</label>
-                            <input type="text" class="form-control" id="chave_pix" name="chave_pix" value="<?php echo htmlspecialchars($professor['chave_pix']); ?>" placeholder="CPF, Email, Telefone ou Aleatória">
+                            <input type="text" class="form-control" id="chave_pix" name="chave_pix" value="<?php echo htmlspecialchars($professor['chave_pix'] ?? ''); ?>" placeholder="CPF, Email, Telefone ou Aleatória">
                             <div class="form-text">Usada para exibir nos lembretes de cobrança.</div>
                         </div>
                     </div>

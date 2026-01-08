@@ -9,8 +9,8 @@ $page_title = 'Relatórios Financeiros';
 require_once 'includes/header.php';
 
 // Filtros
-$mes = filter_input(INPUT_GET, 'mes', FILTER_SANITIZE_STRING) ?: date('m');
-$ano = filter_input(INPUT_GET, 'ano', FILTER_SANITIZE_STRING) ?: date('Y');
+$mes = filter_input(INPUT_GET, 'mes', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('m');
+$ano = filter_input(INPUT_GET, 'ano', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('Y');
 $aluno_id = filter_input(INPUT_GET, 'aluno_id', FILTER_VALIDATE_INT);
 
 // Obter lista de alunos

@@ -8,7 +8,7 @@ if (!isLoggedIn()) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $agenda_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-    $presenca = filter_input(INPUT_POST, 'presenca', FILTER_SANITIZE_STRING);
+    $presenca = filter_input(INPUT_POST, 'presenca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
     if (!$agenda_id || !$presenca) {
         echo json_encode(['success' => false, 'error' => 'Dados inválidos']);

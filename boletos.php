@@ -9,10 +9,10 @@ $page_title = 'Meus Boletos';
 require_once 'includes/header.php';
 
 // Filtros
-$mes = filter_input(INPUT_GET, 'mes', FILTER_SANITIZE_STRING) ?: date('m');
-$ano = filter_input(INPUT_GET, 'ano', FILTER_SANITIZE_STRING) ?: date('Y');
+$mes = filter_input(INPUT_GET, 'mes', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('m');
+$ano = filter_input(INPUT_GET, 'ano', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('Y');
 $aluno_id = filter_input(INPUT_GET, 'aluno_id', FILTER_VALIDATE_INT);
-$status = filter_input(INPUT_GET, 'status', FILTER_SANITIZE_STRING);
+$status = filter_input(INPUT_GET, 'status', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
 // Obter lista de alunos
 $stmt = $pdo->prepare("SELECT id, nome FROM alunos WHERE professor_id = ? AND status = 'ativo' ORDER BY nome");

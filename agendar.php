@@ -48,13 +48,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 
 <div class="hero text-center">
-    <div class="container">
+    <div class="container-fluid px-4">
         <h1>Agendar Aula Experimental</h1>
         <p class="lead">Com o professor(a) <?php echo htmlspecialchars($professor['nome']); ?></p>
     </div>
 </div>
 
-<div class="container">
+<div class="container-fluid px-4">
     <div class="row justify-content-center align-items-center">
         <!-- Coluna do Formulário -->
         <div class="col-lg-5 mb-4">

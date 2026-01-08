@@ -38,8 +38,11 @@ function loadEnvFile($path) {
 
         if (!defined($key)) {
             define($key, $value);
+        } else {
+            // Se já existe, não redefine (evita warnings)
+            continue;
         }
     }
 }
 
-loadEnvFile(__DIR__ . '/../.env');
+loadEnvFile(__DIR__ . '/../.env.local');

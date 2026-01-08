@@ -1,5 +1,7 @@
 # Environment and secrets
 .env
+.env.local
+.env.php
 *.p12
 *.pem
 *.key

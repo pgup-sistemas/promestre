@@ -59,8 +59,8 @@ require_once 'includes/header.php';
     <div class="col-12 col-md-4">
         <div class="card shadow-sm h-100" style="border-left: 4px solid var(--success-color);">
             <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
+                <div class="row g-0 align-items-center">
+                    <div class="col me-2">
                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Recebido</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">R$ <?php echo number_format($total_recebido, 2, ',', '.'); ?></div>
                     </div>
@@ -74,8 +74,8 @@ require_once 'includes/header.php';
     <div class="col-12 col-md-4">
         <div class="card shadow-sm h-100" style="border-left: 4px solid var(--warning-color);">
             <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
+                <div class="row g-0 align-items-center">
+                    <div class="col me-2">
                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pendente</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">R$ <?php echo number_format($total_pendente, 2, ',', '.'); ?></div>
                     </div>
@@ -89,8 +89,8 @@ require_once 'includes/header.php';
     <div class="col-12 col-md-4">
         <div class="card shadow-sm h-100" style="border-left: 4px solid var(--danger-color);">
             <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
+                <div class="row g-0 align-items-center">
+                    <div class="col me-2">
                         <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Atrasado</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">R$ <?php echo number_format($total_atrasado, 2, ',', '.'); ?></div>
                     </div>

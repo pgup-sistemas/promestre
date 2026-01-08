@@ -49,48 +49,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require_once 'includes/header.php';
 ?>
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <div class="text-center mb-4">
-                    <h1 class="h3 mb-3 fw-normal">Crie sua conta</h1>
-                    <p class="text-muted">Comece a gerenciar suas aulas hoje</p>
-                </div>
+<div class="login-container">
+    <div class="login-card" style="max-width: 500px; width: 100%;">
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h1 class="login-title">Crie sua conta</h1>
+            <p class="login-subtitle">Comece a gerenciar suas aulas hoje</p>
+        </div>
+        
+        <div class="login-body">
+            <?php if ($error): ?>
+                <div class="alert alert-danger mb-4"><?php echo $error; ?></div>
+            <?php endif; ?>
 
-                <?php if ($error): ?>
-                    <div class="alert alert-danger"><?php echo $error; ?></div>
-                <?php endif; ?>
-
-                <form method="POST" action="">
-                    <div class="mb-3">
-                        <label for="nome" class="form-label">Nome Completo</label>
-                        <input type="text" class="form-control" id="nome" name="nome" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="telefone" class="form-label">Telefone (WhatsApp)</label>
-                        <input type="text" class="form-control" id="telefone" name="telefone" placeholder="(00) 00000-0000">
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Senha</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirm_password" class="form-label">Confirmar Senha</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Cadastrar</button>
-                    </div>
-                </form>
-                
-                <div class="mt-3 text-center">
-                    <p>Já tem uma conta? <a href="index.php">Faça Login</a></p>
+            <form method="POST" action="" class="login-form">
+                <div class="form-group">
+                    <label for="nome" class="form-label">Nome Completo</label>
+                    <input type="text" class="form-control" id="nome" name="nome" required>
                 </div>
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="telefone" class="form-label">Telefone (WhatsApp)</label>
+                    <input type="text" class="form-control" id="telefone" name="telefone" placeholder="(00) 00000-0000">
+                </div>
+                <div class="form-group">
+                    <label for="password" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password" class="form-label">Confirmar Senha</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                </div>
+            </form>
+            
+            <div class="text-center mt-4">
+                <a href="index.php" class="text-decoration-none fw-bold text-success">Já tem uma conta? Faça Login</a>
             </div>
         </div>
     </div>

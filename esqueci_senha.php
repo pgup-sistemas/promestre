@@ -34,30 +34,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-6 col-lg-4">
-        <div class="card shadow">
-            <div class="card-body p-4">
-                <h3 class="text-center mb-4">Recuperar Senha</h3>
+<div class="login-container">
+    <div class="login-card" style="max-width: 450px; width: 100%;">
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h1 class="login-title">Recuperar Senha</h1>
+            <p class="login-subtitle">Digite seu email para receber o link</p>
+        </div>
+        
+        <div class="login-body">
+            <?php if ($mensagem): ?>
+                <div class="alert alert-<?php echo $tipo_mensagem; ?> mb-4">
+                    <?php echo $mensagem; ?>
+                </div>
+            <?php endif; ?>
 
-                <?php if ($mensagem): ?>
-                <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    showToast(<?= json_encode($mensagem) ?>, <?= json_encode($tipo_mensagem) ?>);
-                });
-                </script>
-                <?php endif; ?>
-
-                <form method="POST">
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Enviar Link</button>
-                        <a href="index.php" class="btn btn-outline-secondary">Voltar para Login</a>
-                    </div>
-                </form>
+            <form method="POST" action="" class="login-form">
+                <div class="form-group">
+                    <label for="email" class="form-label">Email cadastrado</label>
+                    <input type="email" class="form-control" id="email" name="email" required autofocus placeholder="seu@email.com">
+                </div>
+                
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary">Enviar Link de Recuperação</button>
+                </div>
+            </form>
+            
+            <div class="text-center mt-4">
+                <a href="index.php" class="text-decoration-none text-muted"><i class="fas fa-arrow-left me-1"></i> Voltar para Login</a>
             </div>
         </div>
     </div>

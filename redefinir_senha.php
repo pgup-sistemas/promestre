@@ -51,46 +51,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $token_valido) {
 }
 ?>
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-6 col-lg-4">
-        <div class="card shadow">
-            <div class="card-body p-4">
-                <h3 class="text-center mb-4">Redefinir Senha</h3>
-
-                <?php if ($mensagem): ?>
-                <div class="alert alert-<?= $tipo_mensagem == 'error' ? 'danger' : $tipo_mensagem ?> alert-dismissible fade show" role="alert">
-                    <?= $mensagem ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="login-container">
+    <div class="login-card" style="max-width: 450px; width: 100%;">
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="fas fa-key"></i>
+            </div>
+            <h1 class="login-title">Nova Senha</h1>
+            <p class="login-subtitle">Crie uma nova senha segura</p>
+        </div>
+        
+        <div class="login-body">
+            <?php if ($mensagem): ?>
+                <div class="alert alert-<?php echo $tipo_mensagem; ?> mb-4">
+                    <?php echo $mensagem; ?>
                 </div>
-                <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Mantendo o toast para consistência se a função existir
-                    if (typeof showToast === 'function') {
-                        showToast(<?= json_encode(strip_tags($mensagem)) ?>, <?= json_encode($tipo_mensagem) ?>);
-                    }
-                });
-                </script>
-                <?php endif; ?>
+            <?php endif; ?>
 
-                <?php if ($token_valido): ?>
-                    <form method="POST">
-                        <div class="mb-3">
-                            <label for="nova_senha" class="form-label">Nova Senha</label>
-                            <input type="password" class="form-control" id="nova_senha" name="nova_senha" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirmar_senha" class="form-label">Confirmar Senha</label>
-                            <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" required>
-                        </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Salvar Nova Senha</button>
-                        </div>
-                    </form>
-                <?php else: ?>
-                    <div class="d-grid">
-                        <a href="index.php" class="btn btn-primary">Ir para Login</a>
-                    </div>
-                <?php endif; ?>
+            <?php if ($token_valido): ?>
+            <form method="POST" action="" class="login-form">
+                <div class="form-group mb-3">
+                    <label for="nova_senha" class="form-label">Nova Senha</label>
+                    <input type="password" class="form-control" id="nova_senha" name="nova_senha" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="confirmar_senha" class="form-label">Confirmar Senha</label>
+                    <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" required>
+                </div>
+                
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary">Redefinir Senha</button>
+                </div>
+            </form>
+            <?php endif; ?>
+            
+            <div class="text-center mt-4">
+                <a href="index.php" class="text-decoration-none text-muted">Voltar para Login</a>
             </div>
         </div>
     </div>

@@ -16,6 +16,12 @@ document.addEventListener('DOMContentLoaded', function() {
         sidebarToggle.addEventListener('click', event => {
             event.preventDefault();
             document.body.querySelector('#wrapper').classList.toggle('toggled');
+            
+            // Disparar evento de redimensionamento após a transição CSS (300ms)
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, 300);
+            
             // localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
         });
     }

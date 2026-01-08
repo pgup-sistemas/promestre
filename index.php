@@ -1,5 +1,6 @@
 <?php
 require_once 'includes/config.php';
+require_once 'includes/user_management.php';
 
 if (isLoggedIn()) {
     redirect('dashboard.php');
@@ -27,6 +28,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_name'] = $user['nome'];
             $_SESSION['user_email'] = $user['email'];
             $_SESSION['user_slug'] = $user['slug'];
+            $_SESSION['user_nivel'] = $user['nivel'] ?? 'professor';
+            
+            // Atualizar último login
+            updateLastLogin($user['id']);
+            
+            // Registrar log
+            logActivity('LOGIN', null, null, "Login do usuário {$user['nome']}");
+            
             redirect('dashboard.php');
         } else {
             $error = 'Senha incorreta. Verifique a senha ou use "Esqueci minha senha".';
@@ -37,39 +46,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require_once 'includes/header.php';
 ?>
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-6 col-lg-4">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <div class="text-center mb-4">
-                    <h1 class="h3 mb-3 fw-normal">Bem-vindo ao Promestre</h1>
-                    <p class="text-muted">Faça login para continuar</p>
-                </div>
+<div class="login-container">
+    <div class="login-card" style="max-width: 450px; width: 100%;">
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h1 class="login-title">Bem-vindo ao Promestre</h1>
+            <p class="login-subtitle">Faça login para continuar</p>
+        </div>
+        
+        <div class="login-body">
+            <?php if ($error): ?>
+                <div class="alert alert-danger mb-4"><?php echo $error; ?></div>
+            <?php endif; ?>
 
-                <?php if ($error): ?>
-                    <div class="alert alert-danger"><?php echo $error; ?></div>
-                <?php endif; ?>
-
-                <form method="POST" action="">
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required autofocus>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Senha</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <div class="mb-3 text-end">
-                        <a href="esqueci_senha.php" class="text-decoration-none small">Esqueci minha senha</a>
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Entrar</button>
-                    </div>
-                </form>
-                
-                <div class="mt-3 text-center">
-                    <p>Não tem uma conta? <a href="register.php">Cadastre-se</a></p>
+            <form method="POST" action="" class="login-form">
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required autofocus>
                 </div>
+                <div class="form-group">
+                    <label for="password" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </div>
+            </form>
+            
+            <div class="text-center mt-4">
+                <a href="esqueci_senha.php" class="text-decoration-none text-muted small">Esqueci minha senha</a>
+                <span class="mx-2 text-muted">•</span>
+                <a href="register.php" class="text-decoration-none fw-bold text-success">Cadastre-se</a>
             </div>
         </div>
     </div>

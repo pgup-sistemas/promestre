@@ -90,17 +90,15 @@ CREATE TABLE IF NOT EXISTS assinaturas (
 );
 
 -- 3c. Campos de cancelamento agendado (SaaS) e controle de período pago
-ALTER TABLE assinaturas
-ADD COLUMN IF NOT EXISTS paid_until DATE NULL,
-ADD COLUMN IF NOT EXISTS cancel_requested_at TIMESTAMP NULL,
-ADD COLUMN IF NOT EXISTS cancel_at DATE NULL,
-ADD COLUMN IF NOT EXISTS canceled_at TIMESTAMP NULL,
-ADD COLUMN IF NOT EXISTS cancel_reason VARCHAR(255) NULL;
+ALTER TABLE assinaturas ADD COLUMN paid_until DATE NULL;
+ALTER TABLE assinaturas ADD COLUMN cancel_requested_at TIMESTAMP NULL;
+ALTER TABLE assinaturas ADD COLUMN cancel_at DATE NULL;
+ALTER TABLE assinaturas ADD COLUMN canceled_at TIMESTAMP NULL;
+ALTER TABLE assinaturas ADD COLUMN cancel_reason VARCHAR(255) NULL;
 
 -- 4. Adicionar campo de presença na tabela agenda (se não existir)
-ALTER TABLE agenda 
-ADD COLUMN IF NOT EXISTS presenca ENUM('presente', 'ausente', 'justificada') NULL,
-ADD COLUMN IF NOT EXISTS data_presenca TIMESTAMP NULL;
+ALTER TABLE agenda ADD COLUMN presenca ENUM('presente', 'ausente', 'justificada') NULL;
+ALTER TABLE agenda ADD COLUMN data_presenca TIMESTAMP NULL;
 
 -- 4b. Tabela de configuração de modelo de contrato
 CREATE TABLE IF NOT EXISTS contratos_config (
@@ -145,38 +143,34 @@ CREATE TABLE IF NOT EXISTS contratos_aluno (
     INDEX idx_efi_charge (efi_charge_id)
 );
 
-ALTER TABLE contratos_aluno
-ADD COLUMN IF NOT EXISTS boleto_url VARCHAR(500) NULL,
-ADD COLUMN IF NOT EXISTS boleto_barcode VARCHAR(255) NULL,
-ADD COLUMN IF NOT EXISTS boleto_pdf_url VARCHAR(500) NULL;
+ALTER TABLE contratos_aluno ADD COLUMN boleto_url VARCHAR(500) NULL;
+ALTER TABLE contratos_aluno ADD COLUMN boleto_barcode VARCHAR(255) NULL;
+ALTER TABLE contratos_aluno ADD COLUMN boleto_pdf_url VARCHAR(500) NULL;
 
 -- 5. Adicionar campos de configuração financeira na tabela professores
-ALTER TABLE professores
-ADD COLUMN IF NOT EXISTS dia_vencimento_padrao INT DEFAULT 10,
-ADD COLUMN IF NOT EXISTS taxa_multa DECIMAL(5,2) DEFAULT 2.00,
-ADD COLUMN IF NOT EXISTS taxa_juros DECIMAL(5,2) DEFAULT 1.00,
-ADD COLUMN IF NOT EXISTS validade_pix_horas INT DEFAULT 24,
-ADD COLUMN IF NOT EXISTS validade_boleto_dias INT DEFAULT 7,
-ADD COLUMN IF NOT EXISTS ambiente_efi ENUM('sandbox', 'production') DEFAULT 'sandbox',
-ADD COLUMN IF NOT EXISTS webhook_url VARCHAR(500) NULL,
-ADD COLUMN IF NOT EXISTS webhook_secret VARCHAR(255) NULL;
+ALTER TABLE professores ADD COLUMN dia_vencimento_padrao INT DEFAULT 10;
+ALTER TABLE professores ADD COLUMN taxa_multa DECIMAL(5,2) DEFAULT 2.00;
+ALTER TABLE professores ADD COLUMN taxa_juros DECIMAL(5,2) DEFAULT 1.00;
+ALTER TABLE professores ADD COLUMN validade_pix_horas INT DEFAULT 24;
+ALTER TABLE professores ADD COLUMN validade_boleto_dias INT DEFAULT 7;
+ALTER TABLE professores ADD COLUMN ambiente_efi ENUM('sandbox', 'production') DEFAULT 'sandbox';
+ALTER TABLE professores ADD COLUMN webhook_url VARCHAR(500) NULL;
+ALTER TABLE professores ADD COLUMN webhook_secret VARCHAR(255) NULL;
 
-ALTER TABLE alunos
-ADD COLUMN IF NOT EXISTS possui_responsavel BOOLEAN DEFAULT FALSE,
-ADD COLUMN IF NOT EXISTS responsavel_nome VARCHAR(100) NULL,
-ADD COLUMN IF NOT EXISTS responsavel_cpf VARCHAR(14) NULL,
-ADD COLUMN IF NOT EXISTS responsavel_email VARCHAR(100) NULL,
-ADD COLUMN IF NOT EXISTS responsavel_telefone VARCHAR(20) NULL,
-ADD COLUMN IF NOT EXISTS responsavel_whatsapp VARCHAR(20) NULL,
-ADD COLUMN IF NOT EXISTS responsavel_parentesco VARCHAR(50) NULL;
+ALTER TABLE alunos ADD COLUMN possui_responsavel BOOLEAN DEFAULT FALSE;
+ALTER TABLE alunos ADD COLUMN responsavel_nome VARCHAR(100) NULL;
+ALTER TABLE alunos ADD COLUMN responsavel_cpf VARCHAR(14) NULL;
+ALTER TABLE alunos ADD COLUMN responsavel_email VARCHAR(100) NULL;
+ALTER TABLE alunos ADD COLUMN responsavel_telefone VARCHAR(20) NULL;
+ALTER TABLE alunos ADD COLUMN responsavel_whatsapp VARCHAR(20) NULL;
+ALTER TABLE alunos ADD COLUMN responsavel_parentesco VARCHAR(50) NULL;
 
 -- 5a. Soft delete de alunos
 ALTER TABLE alunos
 ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP NULL;
 
 -- 5b. Adicionar slug em professores (usado nos links públicos e login)
-ALTER TABLE professores
-ADD COLUMN IF NOT EXISTS slug VARCHAR(160) NULL;
+ALTER TABLE professores ADD COLUMN slug VARCHAR(160) NULL;
 
 UPDATE professores
 SET slug = CONCAT(
@@ -200,19 +194,18 @@ ALTER TABLE professores
 ADD UNIQUE INDEX IF NOT EXISTS idx_professores_slug (slug);
 
 -- 6. Adicionar campos necessários em mensalidades
-ALTER TABLE mensalidades
-ADD COLUMN IF NOT EXISTS valor_original DECIMAL(10,2) NULL,
-ADD COLUMN IF NOT EXISTS valor_final DECIMAL(10,2) NULL,
-ADD COLUMN IF NOT EXISTS valor_multa DECIMAL(10,2) DEFAULT 0.00,
-ADD COLUMN IF NOT EXISTS valor_juros DECIMAL(10,2) DEFAULT 0.00,
-ADD COLUMN IF NOT EXISTS dias_atraso INT DEFAULT 0,
-ADD COLUMN IF NOT EXISTS pix_expira_em TIMESTAMP NULL,
-ADD COLUMN IF NOT EXISTS boleto_url VARCHAR(500) NULL,
-ADD COLUMN IF NOT EXISTS boleto_barcode VARCHAR(255) NULL,
-ADD COLUMN IF NOT EXISTS boleto_expira_em DATE NULL,
-ADD COLUMN IF NOT EXISTS efi_charge_id VARCHAR(255) NULL,
-ADD COLUMN IF NOT EXISTS efi_payment_url TEXT NULL,
-ADD COLUMN IF NOT EXISTS efi_payment_status VARCHAR(50) NULL;
+ALTER TABLE mensalidades ADD COLUMN valor_original DECIMAL(10,2) NULL;
+ALTER TABLE mensalidades ADD COLUMN valor_final DECIMAL(10,2) NULL;
+ALTER TABLE mensalidades ADD COLUMN valor_multa DECIMAL(10,2) DEFAULT 0.00;
+ALTER TABLE mensalidades ADD COLUMN valor_juros DECIMAL(10,2) DEFAULT 0.00;
+ALTER TABLE mensalidades ADD COLUMN dias_atraso INT DEFAULT 0;
+ALTER TABLE mensalidades ADD COLUMN pix_expira_em TIMESTAMP NULL;
+ALTER TABLE mensalidades ADD COLUMN boleto_url VARCHAR(500) NULL;
+ALTER TABLE mensalidades ADD COLUMN boleto_barcode VARCHAR(255) NULL;
+ALTER TABLE mensalidades ADD COLUMN boleto_expira_em DATE NULL;
+ALTER TABLE mensalidades ADD COLUMN efi_charge_id VARCHAR(255) NULL;
+ALTER TABLE mensalidades ADD COLUMN efi_payment_url TEXT NULL;
+ALTER TABLE mensalidades ADD COLUMN efi_payment_status VARCHAR(50) NULL;
 
 -- Inserir templates padrão para cada professor existente
 INSERT INTO templates_mensagem (professor_id, nome, tipo, template, ativo)

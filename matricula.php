@@ -61,13 +61,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 
 <div class="hero text-center">
-    <div class="container">
+    <div class="container-fluid px-4">
         <h1>Pré-Matrícula Online</h1>
         <p class="lead">Estude com <?php echo htmlspecialchars($professor['nome']); ?></p>
     </div>
 </div>
 
-<div class="container mb-5">
+<div class="container-fluid px-4 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow">

@@ -16,7 +16,7 @@ $status = isset($_GET['status']) ? clean($_GET['status']) : 'ativo';
 $sql = "SELECT a.*, t.nome as tipo_aula_nome, t.cor as tipo_aula_cor 
         FROM alunos a 
         LEFT JOIN tipos_aula t ON a.tipo_aula_id = t.id 
-        WHERE a.professor_id = ? AND a.deleted_at IS NULL";
+        WHERE a.professor_id = ?";
 $params = [$professor_id];
 
 if ($status && $status != 'todos') {
